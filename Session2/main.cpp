@@ -2,12 +2,14 @@
 #define EXERCISE2
 #define EXERCISE3
 #define EXERCISE4
+#define EXERCISE5
 
 #include <iostream>
 #include "sizes_ranges.h"
 #include "endianness.h"
 #include "max.h"
 #include "benchmark.h"
+#include "rng.h"
 
 int main() {
 #ifdef EXERCISE1
@@ -40,6 +42,10 @@ int main() {
             delete [] arr;
         }
     });
+#endif
+    
+#ifdef EXERCISE5
+    benchmark_rngs();
 #endif
     return 0;
 }
