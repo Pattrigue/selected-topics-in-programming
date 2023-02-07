@@ -1,2 +1,2 @@
-# selected topics in programming
+# Selected Topics in Programming
  
