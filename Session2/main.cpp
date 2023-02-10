@@ -1,7 +1,7 @@
-﻿#define EXERCISE1
-#define EXERCISE2
-#define EXERCISE3
-#define EXERCISE4
+﻿//#define EXERCISE1
+//#define EXERCISE2
+//#define EXERCISE3
+//#define EXERCISE4
 #define EXERCISE5
 
 #include <iostream>
