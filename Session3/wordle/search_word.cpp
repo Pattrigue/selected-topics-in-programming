@@ -4,19 +4,24 @@ namespace wordle {
     search_word::search_word(const std::string &pattern)
             : m_string(search_pattern_to_string(pattern))
     {
-        {
-            for (std::size_t i = 0; i < pattern.size(); ++i) {
-                char c = pattern[i];
+        for (std::size_t i = 0; i < pattern.size(); i++) {
+            char c = pattern[i];
+            
+            if (token::is_presence_token(c)) {
+                continue;
+            }
 
-                if (!token::is_token(c) && i > 0) {
-                    char prev = pattern[i - 1];
+            if (i == 0) {
+                add_token(c);
+                continue;
+            }
 
-                    if (token::is_token(prev)) {
-                        add_token(token {prev, c } );
-                    } else {
-                        add_token(token {c } );
-                    }
-                }
+            char prev = pattern[i - 1];
+
+            if (!token::is_presence_token(prev)) {
+                add_token(c);
+            } else {
+                add_token(prev, c);
             }
         }
     }
@@ -29,8 +34,16 @@ namespace wordle {
         return m_tokens[index];
     }
     
-    const std::vector<token> &search_word::tokens() {
+    const std::vector<token> &search_word::tokens() const {
         return m_tokens;
+    }
+    
+    void search_word::add_token(char prefix, char character) {
+        add_token(token { prefix, character, static_cast<int>(m_tokens.size()) });
+    }
+
+    void search_word::add_token(char character) {
+        add_token(token { character, static_cast<int>(m_tokens.size()) });
     }
     
     void search_word::add_token(const token &token) {

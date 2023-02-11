@@ -2,13 +2,13 @@
 #include "token.h"
 
 namespace wordle {
-    token::token(char prefix, char character)
-            : m_prefix(prefix), m_char(std::tolower(character, std::locale()))
+    token::token(char prefix, char character, int position)
+            : m_prefix(prefix), m_char(std::tolower(character, std::locale())), m_position(position)
     {
     }
 
-    token::token(char character)
-            : token('\0', character)
+    token::token(char character, int position)
+            : token('\0', character, position)
     {
     }
 
@@ -23,8 +23,12 @@ namespace wordle {
     char token::character() const {
         return m_char;
     }
+    
+    int token::position() const {
+        return m_position;
+    }
 
-    bool token::is_token(char c) {
+    bool token::is_presence_token(char c) {
         return c == TOKEN_PRESENT || c == TOKEN_ABSENT;
     }
 } 

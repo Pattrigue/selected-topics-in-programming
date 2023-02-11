@@ -7,16 +7,18 @@ namespace wordle {
     
     class token {
     public:
-        token(char prefix, char character);
-        explicit token(char character);
+        token(char prefix, char character, int position);
+        explicit token(char character, int position);
 
         bool has_prefix() const;
         char prefix() const;
         char character() const;
-        static bool is_token(char c);
+        int position() const;
+        static bool is_presence_token(char c);
     private:
         char m_prefix;
         char m_char;
+        int m_position;
     };
 }
 
