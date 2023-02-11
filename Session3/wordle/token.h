@@ -14,7 +14,6 @@ namespace wordle {
         char prefix() const;
         char character() const;
         int position() const;
-        static bool is_presence_token(char c);
     private:
         char m_prefix;
         char m_char;
@@ -22,4 +21,4 @@ namespace wordle {
     };
 }
 
-#endif //WORDLE_TOKEN_H
+#endif 

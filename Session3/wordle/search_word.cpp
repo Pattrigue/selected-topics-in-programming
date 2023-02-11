@@ -1,13 +1,18 @@
-﻿#include "search_word.h"
+﻿#include <algorithm>
+#include "search_word.h"
 
 namespace wordle {
+    static bool is_character(char c) {
+        return c != TOKEN_PRESENT && c != TOKEN_ABSENT;
+    }
+    
     search_word::search_word(const std::string &pattern)
             : m_string(search_pattern_to_string(pattern))
     {
         for (std::size_t i = 0; i < pattern.size(); i++) {
             char c = pattern[i];
             
-            if (token::is_presence_token(c)) {
+            if (!is_character(c)) {
                 continue;
             }
 
@@ -18,7 +23,7 @@ namespace wordle {
 
             char prev = pattern[i - 1];
 
-            if (!token::is_presence_token(prev)) {
+            if (is_character(prev)) {
                 add_token(c);
             } else {
                 add_token(prev, c);
@@ -61,8 +66,10 @@ namespace wordle {
         }
         
         // convert it to lowercase
-        std::transform(s.begin(), s.end(), s.begin(),
-            [](unsigned char c) { return std::tolower(c); });
+        std::ranges::transform(s.begin(), s.end(), s.begin(),
+            [](unsigned char c) { 
+            return std::tolower(c); 
+        });
 
         return s;
     }

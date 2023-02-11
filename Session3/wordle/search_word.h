@@ -23,4 +23,4 @@ namespace wordle {
     };
 } 
 
-#endif //WORDLE_SEARCH_WORD_H
+#endif 

@@ -27,8 +27,4 @@ namespace wordle {
     int token::position() const {
         return m_position;
     }
-
-    bool token::is_presence_token(char c) {
-        return c == TOKEN_PRESENT || c == TOKEN_ABSENT;
-    }
 } 
