@@ -8,6 +8,7 @@
 #include "js_parser.h"
 #include "token.h"
 
+
 bool is_input_valid(const std::string &input);
 std::string select_random_word(const std::vector<std::string> &words);
 
