@@ -10,7 +10,10 @@ public:
     std::vector<point>::iterator begin();    
     std::vector<point>::iterator end(); 
     
+    void clear();
+    
     void operator+=(const point &rhs);
+    explicit operator bool () const;
 private:
     std::vector<point> m_points;
 };
