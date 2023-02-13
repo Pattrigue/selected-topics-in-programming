@@ -3,19 +3,23 @@
 
 
 #include <vector>
+#include <memory>
 #include "point.h"
 
 class polyline {
 public:
-    std::vector<point>::iterator begin();    
-    std::vector<point>::iterator end(); 
+    polyline (const polyline &other) : m_points(other.m_points) { } // copy constructor
     
-    void clear();
+    std::vector<point>::iterator begin() const; 
+    std::vector<point>::iterator end() const;
+    
+    void clear() const;
+    explicit operator bool () const;
     
     void operator+=(const point &rhs);
-    explicit operator bool () const;
+    polyline &operator=(const polyline &other);
 private:
-    std::vector<point> m_points;
+    std::shared_ptr<std::vector<point>> m_points;
 };
 
 
