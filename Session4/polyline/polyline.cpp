@@ -1,4 +1,5 @@
-﻿#include "polyline.h"
+﻿#include <iostream>
+#include "polyline.h"
 
 std::vector<point>::iterator polyline::begin() const {
     return m_points->begin();
@@ -9,7 +10,12 @@ std::vector<point>::iterator polyline::end() const {
 }
 
 void polyline::clear() const {
+    std::cout << "Cleared points." << std::endl;
     m_points->clear();
+}
+
+std::vector<point> *polyline::get() const {
+    return m_points.get();
 }
 
 polyline::operator bool() const {
@@ -22,6 +28,7 @@ void polyline::operator+=(const point &rhs) {
     {
         // If so, create a new instance of std::vector<point> and copy the content of m_points into it. 
         // Then, reset m_points to the new instance.
+        std::cout << "Performed copy-on-write." << std::endl;
         m_points = std::make_shared<std::vector<point>>(*m_points);
     }
     
@@ -29,6 +36,7 @@ void polyline::operator+=(const point &rhs) {
 }
 
 polyline &polyline::operator=(const polyline &other) {
+    std::cout << "Copy assignment operator." << std::endl;
     m_points = other.m_points;
     return *this;
 }

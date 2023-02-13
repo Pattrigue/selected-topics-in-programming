@@ -8,18 +8,25 @@
 
 class polyline {
 public:
-    polyline (const polyline &other) : m_points(other.m_points) { } // copy constructor
+    polyline () {
+        std::cout << "Polyline default constructor." << std::endl;
+    } 
+    
+    polyline (const polyline &other) : m_points(other.m_points) {
+        std::cout << "Polyline copy constructor." << std::endl;
+    } 
     
     std::vector<point>::iterator begin() const; 
     std::vector<point>::iterator end() const;
     
     void clear() const;
+    std::vector<point>* get() const;
     explicit operator bool () const;
     
     void operator+=(const point &rhs);
     polyline &operator=(const polyline &other);
 private:
-    std::shared_ptr<std::vector<point>> m_points;
+    std::shared_ptr<std::vector<point>> m_points = std::make_shared<std::vector<point>>();
 };
 
 
