@@ -24,7 +24,7 @@ public:
     explicit operator bool () const;
     
     void operator+=(const point &rhs);
-    polyline &operator=(const polyline &other);    
+    polyline &operator=(const polyline &other);
 private:
     std::shared_ptr<std::vector<point>> m_points = std::make_shared<std::vector<point>>();
 };
