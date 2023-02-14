@@ -60,6 +60,19 @@ int NumberSeries::operator+(const NumberSeries &rhs) {
     return sum;
 }
 
+NumberSeries &NumberSeries::operator+=(const NumberSeries &rhs) {
+    size_t size = m_series.size() > rhs.m_series.size() ? m_series.size() : rhs.m_series.size();
+    
+    for (std::size_t i = 0; i < size; i++) {
+        if (i < m_series.size() && i < rhs.m_series.size()) {
+            m_series[i] += rhs.m_series[i];
+        } else if (i < m_series.size()) {
+            m_series[i] += 0;
+        } else if (i < rhs.m_series.size()) {
+            m_series.push_back(rhs.m_series[i]);
+        }
+    }
+}
 
 bool NumberSeries::operator<(const NumberSeries &rhs) const {
     int amplitude = m_max - m_min;

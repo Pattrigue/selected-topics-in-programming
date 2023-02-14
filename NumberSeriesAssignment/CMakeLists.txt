@@ -3,4 +3,5 @@ project(NumberSeriesAssignment)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(NumberSeriesAssignment main.cpp NumberSeries.cpp NumberSeries.h)
+add_executable(NumberSeriesAssignment main.cpp NumberSeries.cpp NumberSeries.h
+        Timer.cpp Timer.h)
