@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <chrono>
-#include "NumberSeries.h"
+#include "number_series.h"
 
 int main() {
     // Fill an array/vector of 100.000 random number series, each with 100 elements.

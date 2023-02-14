@@ -3,5 +3,5 @@ project(NumberSeriesAssignment)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(NumberSeriesAssignment main.cpp NumberSeries.cpp NumberSeries.h
-        )
+add_executable(NumberSeriesAssignment main.cpp number_series.cpp number_series.h
+        series_wrapper.cpp series_wrapper.h)

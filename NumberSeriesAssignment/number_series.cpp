@@ -1,6 +1,6 @@
 ﻿#include <random>
 #include <iostream>
-#include "NumberSeries.h"
+#include "number_series.h"
 
 namespace series {
     NumberSeries NumberSeries::make_random(size_t size, int min, int max) {
