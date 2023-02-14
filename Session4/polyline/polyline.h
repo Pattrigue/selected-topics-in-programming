@@ -12,6 +12,10 @@ public:
         std::cout << "Polyline default constructor." << std::endl;
     } 
     
+    explicit polyline(const std::vector<point> &points) : m_points(std::make_shared<std::vector<point>>(points)) {
+        std::cout << "Polyline custom constructor." << std::endl;
+    }
+    
     polyline (const polyline &other) : m_points(other.m_points) {
         std::cout << "Polyline copy constructor." << std::endl;
     } 
