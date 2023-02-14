@@ -25,6 +25,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const NumberSeries &series);
 
 private:
+    // int averages[12]; // Exercise 4 asks to check execution time with this - it makes the wrapper faster!
     std::vector<int> m_series;
     int m_min;
     int m_max;
