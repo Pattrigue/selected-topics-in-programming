@@ -73,6 +73,8 @@ namespace series {
                 m_series.push_back(rhs.m_series[i]);
             }
         }
+        
+        return *this;
     }
 
     bool NumberSeries::operator<(const NumberSeries &rhs) const {
