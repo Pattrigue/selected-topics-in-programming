@@ -14,7 +14,7 @@ void print_polyline(const polyline &line) {
     
     for (auto it = line.begin(); it != line.end(); ++it) {
         const auto &point = *it;
-        std::cout << "(" << point.x << ", " << point.y << ")";
+        std::cout << point;
         
         if (it + 1 != line.end()) {
             std::cout << ", ";

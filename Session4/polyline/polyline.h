@@ -16,15 +16,15 @@ public:
         std::cout << "Polyline copy constructor." << std::endl;
     } 
     
-    std::vector<point>::iterator begin() const; 
-    std::vector<point>::iterator end() const;
+    [[nodiscard]] std::vector<point>::iterator begin() const; 
+    [[nodiscard]] std::vector<point>::iterator end() const;
     
     void clear() const;
-    std::vector<point>* get() const;
+    [[nodiscard]] std::vector<point>* get() const;
     explicit operator bool () const;
     
     void operator+=(const point &rhs);
-    polyline &operator=(const polyline &other);
+    polyline &operator=(const polyline &other);    
 private:
     std::shared_ptr<std::vector<point>> m_points = std::make_shared<std::vector<point>>();
 };
