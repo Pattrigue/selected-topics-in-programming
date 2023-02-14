@@ -36,6 +36,10 @@ void polyline::operator+=(const point &rhs) {
 }
 
 polyline &polyline::operator=(const polyline &other) {
+    if (this == &other) {
+        return *this;
+    }
+    
     std::cout << "Copy assignment operator." << std::endl;
     m_points = other.m_points;
     return *this;
