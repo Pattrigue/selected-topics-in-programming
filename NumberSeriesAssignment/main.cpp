@@ -3,19 +3,20 @@
 #include "number_series.h"
 #include "series_wrapper.h"
 
-constexpr int series_vec_size = 100'000;
+constexpr int series_vec_size = 100000;
+constexpr int num_random_series = 100;
 
 void driver() {
-    // Fill an array/vector of 100.000 random number series, each with 100 elements.
+    // Fill an array/vector with random number series.
     std::vector<series::NumberSeries> series_vec(series_vec_size);
 
     for (int i = 0; i < series_vec_size; i++) {
-        series_vec.push_back(series::NumberSeries::make_random(100));
+        series_vec.push_back(series::NumberSeries::make_random(num_random_series));
     }
 
     // Add a random number series to each of number series in the array/vector.
     for (auto &item: series_vec) {
-        auto series = series::NumberSeries::make_random(100);
+        auto series = series::NumberSeries::make_random(num_random_series);
         item += series;
     }
 
@@ -36,16 +37,16 @@ void driver() {
 }
 
 void driver_wrapper() {
-    // Fill an array/vector of 100.000 random number series, each with 100 elements.
+    // Fill an array/vector with random number series.
     std::vector<series::NumberSeriesWrapper> series_vec(series_vec_size);
 
     for (int i = 0; i < series_vec_size; i++) {
-        series_vec.push_back(series::NumberSeriesWrapper::make_random(100));
+        series_vec.push_back(series::NumberSeriesWrapper::make_random(num_random_series));
     }
 
     // Add a random number series to each of number series in the array/vector.
     for (auto &item: series_vec) {
-        auto series = series::NumberSeriesWrapper::make_random(100);
+        auto series = series::NumberSeriesWrapper::make_random(num_random_series);
         item += series;
     }
 
