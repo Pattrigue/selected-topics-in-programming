@@ -54,6 +54,8 @@ namespace calculator {
             return s[m_id];
         }
         
+        operator expr_t() const;
+        
         [[nodiscard]] size_t id() const {
             return m_id;
         }
@@ -181,19 +183,23 @@ namespace calculator {
     struct expr_t {
         std::shared_ptr<term_t> m_term;
         
-        // unary operator constructor
-        expr_t(const var_t& e, op_t op) {
-            m_term = std::make_shared<unary_t>(std::make_shared<var_t>(e), op);
+        explicit expr_t(const var_t& v) {
+            // implementation to create an expression tree from a single variable
+            m_term = std::make_shared<var_t>(v);
         }
         
+        // unary operator constructor
+        expr_t(const expr_t& e, op_t op) {
+            m_term = std::make_shared<unary_t>(e.m_term, op);
+        }
+
         // binary operator constructor
-        expr_t(const var_t& e1, const var_t& e2, op_t op) {
-            m_term = std::make_shared<binary_t>(std::make_shared<var_t>(e1), std::make_shared<var_t>(e2), op);
+        expr_t(const expr_t& e1, const expr_t& e2, op_t op) {
+            m_term = std::make_shared<binary_t>(e1.m_term, e2.m_term, op);
         }
         
         // assignment constructor
         expr_t(const var_t& v, const expr_t& e) {
-            std::cout << "guh" << std::endl;
             m_term = std::make_shared<assign_t>(std::make_shared<var_t>(v), e.m_term, op_t::assign);
         }
         
@@ -202,19 +208,24 @@ namespace calculator {
             return (*m_term)(s);
         }
     };
-    
+
+    // conversion operator from var_t to expr_t
+    var_t::operator expr_t() const {
+        return expr_t(*this);
+    }
+
     /** assignment operation */
     inline double var_t::operator()(state_t& s, const expr_t& e) const { return s[m_id] = e(s); }
 
     /** unary operators: */
-    inline expr_t operator+(const var_t& e) { return expr_t{e, op_t::plus}; }
-    inline expr_t operator-(const var_t& e) { return expr_t{e, op_t::minus}; }
+    inline expr_t operator+(const expr_t& e) { return expr_t{e, op_t::plus}; }
+    inline expr_t operator-(const expr_t& e) { return expr_t{e, op_t::minus}; }
     
     /** binary operators: */
-    inline expr_t operator+(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::plus}; }
-    inline expr_t operator-(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::minus}; }
-    inline expr_t operator*(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::mul}; }
-    inline expr_t operator/(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::div}; }
+    inline expr_t operator+(const expr_t& e1, const expr_t& e2) { return expr_t{e1, e2, op_t::plus}; }
+    inline expr_t operator-(const expr_t& e1, const expr_t& e2) { return expr_t{e1, e2, op_t::minus}; }
+    inline expr_t operator*(const expr_t& e1, const expr_t& e2) { return expr_t{e1, e2, op_t::mul}; }
+    inline expr_t operator/(const expr_t& e1, const expr_t& e2) { return expr_t{e1, e2, op_t::div}; }
     inline expr_t operator<<=(const var_t& v, const expr_t& e) { return expr_t{v, e}; }
 }
 
