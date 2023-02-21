@@ -19,6 +19,7 @@ namespace calculator {
         plus, minus, mul, div, assign
     };
 
+
     /** Abstract class representing a term in an expression */
     class term_t {
     public:
@@ -28,6 +29,7 @@ namespace calculator {
 
         virtual double operator()(state_t &s) const = 0;
     };
+
 
     /** Class representing a constant */
     class const_t : public term_t {
@@ -40,6 +42,7 @@ namespace calculator {
             return m_value;
         }
     };
+
 
     /** Class representing a variable */
     class var_t : public term_t {
@@ -67,6 +70,7 @@ namespace calculator {
 
         var_t(expr_t expr);
     };
+
 
     /** Class representing an assignment */
     class assign_t : public term_t {
@@ -109,6 +113,7 @@ namespace calculator {
         }
     };
 
+
     /** Class representing a unary operator */
     class unary_t : public term_t {
         std::shared_ptr<term_t> term;
@@ -131,6 +136,7 @@ namespace calculator {
         }
     };
 
+
     /** Class representing a binary operator */
     class binary_t : public term_t {
         std::shared_ptr<term_t> m_lhs;
@@ -145,8 +151,9 @@ namespace calculator {
             double rhs = (*m_rhs)(s);
 
             switch (op) {
-                using enum calculator::op_t;
-                
+                using
+                enum calculator::op_t;
+
                 case plus:
                     return lhs + rhs;
                 case minus:
@@ -164,6 +171,7 @@ namespace calculator {
             }
         }
     };
+
 
     class symbol_table_t {
         std::vector<std::string> names;
@@ -206,7 +214,7 @@ namespace calculator {
         expr_t(const var_t &v, const expr_t &e, op_t op) {
             m_term = std::make_shared<assign_t>(std::make_shared<var_t>(v), e.m_term, op);
         }
-        
+
         // const constructor
         expr_t(double i) {
             m_term = std::make_shared<const_t>(i);
@@ -218,7 +226,7 @@ namespace calculator {
         }
     };
 
-    
+
     // conversion operator from var_t to expr_t
     var_t::operator expr_t() const { return expr_t(*this); }
 
@@ -242,11 +250,11 @@ namespace calculator {
     inline expr_t operator*(const expr_t &e1, const expr_t &e2) { return expr_t{e1, e2, op_t::mul}; }
 
     inline expr_t operator/(const expr_t &e1, const expr_t &e2) { return expr_t{e1, e2, op_t::div}; }
-    
+
     inline expr_t operator<<=(const var_t &v, const expr_t &e) { return expr_t{v, e, op_t::assign}; }
-    
+
     inline expr_t operator+=(const var_t &v, const expr_t &e) { return expr_t{v, e, op_t::plus}; }
-    
+
     inline expr_t operator-=(const var_t &v, const expr_t &e) { return expr_t{v, e, op_t::minus}; }
 }
 
