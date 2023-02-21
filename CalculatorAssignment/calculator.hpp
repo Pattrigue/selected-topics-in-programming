@@ -19,6 +19,7 @@ namespace calculator {
         plus, minus, mul, div, assign
     };
 
+    /** Abstract class representing a term in an expression */
     class term_t {
     public:
         term_t() = default;
@@ -63,6 +64,8 @@ namespace calculator {
         double operator()(state_t &, const expr_t &) const;
 
         friend class symbol_table_t;
+
+        var_t(expr_t expr);
     };
 
     /** Class representing an assignment */
@@ -221,6 +224,10 @@ namespace calculator {
 
     /** assignment operation */
     inline double var_t::operator()(state_t &s, const expr_t &e) const { return s[m_id] = e(s); }
+
+    var_t::var_t(expr_t expr) {
+        throw std::logic_error("assignment destination must be a variable expression");
+    }
 
     /** unary operators: */
     inline expr_t operator+(const expr_t &e) { return expr_t{e, op_t::plus}; }
