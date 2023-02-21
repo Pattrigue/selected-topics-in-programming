@@ -69,7 +69,6 @@ int main() {
      * This is probably because the smart pointers have to dereference the pointer to get to the Derived object before
      * it can call the method.
      * This extra step introduces a bit of overhead, which adds up over the course of the loop.
-     * 
     */
     
     return 0;
