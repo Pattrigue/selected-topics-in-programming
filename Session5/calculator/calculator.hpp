@@ -207,6 +207,10 @@ namespace calculator {
         expr_t(int i) {
             m_term = std::make_shared<const_t>(i);
         }
+        
+        expr_t(double i) {
+            m_term = std::make_shared<const_t>(i);
+        }
 
         // call operator 
         double operator()(state_t &s) const {

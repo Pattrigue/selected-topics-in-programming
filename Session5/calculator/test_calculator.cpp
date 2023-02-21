@@ -70,6 +70,7 @@ TEST_CASE("Calculate expressions lazily")
     {
         CHECK((7 + a)(state) == 9);
         CHECK((a - 7)(state) == -5);
+        CHECK((a + 3.14)(state) == doctest::Approx(5.14));
     }
     /*
     SUBCASE("Store expression and evaluate lazily")
