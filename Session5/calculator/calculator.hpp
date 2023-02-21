@@ -74,30 +74,31 @@ namespace calculator {
             : var{std::move(var)}, term{std::move(term)}, op{op} {} 
 
         double operator()(state_t &s) const override {
-            double res = (*term)(s);
+            double value = (*term)(s);
             
             switch (op) {
                 case plus:
-                    s[var->id()] += res;
+                    s[var->id()] += value;
                     break;
                 case minus:
-                    s[var->id()] -= res;
+                    s[var->id()] -= value;
                     break;
                 case mul:
-                    s[var->id()] *= res;
+                    s[var->id()] *= value;
                     break;
                 case div:
-                    s[var->id()] /= res;
+                    s[var->id()] /= value;
                     break;
                 case assign:
-                    s[var->id()] = res;
+                    s[var->id()] = value;
                     break;
             }
             
-            return res;
+            return value;
         }
     };
     
+    /** Class representing a unary operator */
     class unary_t : public term_t {
         std::shared_ptr<term_t> term;
         op_t op;
@@ -106,19 +107,20 @@ namespace calculator {
             : term{std::move(term)}, op{op} {} 
 
         double operator()(state_t &s) const override {
-            double res = (*term)(s);
+            double value = (*term)(s);
             
             switch (op) {
                 case plus:
-                    return res;
+                    return value;
                 case minus:
-                    return -res;
+                    return -value;
                 default:
                     throw std::logic_error{"invalid unary operator"};
             }
         }
     };
     
+    /** Class representing a binary operator */
     class binary_t : public term_t {
         std::shared_ptr<term_t> term1;
         std::shared_ptr<term_t> term2;
@@ -128,18 +130,22 @@ namespace calculator {
                 : term1{std::move(term1)}, term2{std::move(term2)}, op{op} {}
 
         double operator()(state_t &s) const override {
-            double res1 = (*term1)(s);
-            double res2 = (*term2)(s);
+            double lhs = (*term1)(s);
+            double rhs = (*term2)(s);
 
             switch (op) {
                 case plus:
-                    return res1 + res2;
+                    return lhs + rhs;
                 case minus:
-                    return res1 - res2;
+                    return lhs - rhs;
                 case mul:
-                    return res1 * res2;
+                    return lhs * rhs;
                 case div:
-                    return res1 / res2;
+                    if (rhs == 0) {
+                        throw std::logic_error{"division by zero"};
+                    }
+                    
+                    return lhs / rhs;
                 default:
                     throw std::logic_error{"invalid binary operator"};
             }
