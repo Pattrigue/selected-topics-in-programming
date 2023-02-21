@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
+#include <valarray>
 
 namespace calculator {
     /** Type to capture the state of entire calculator (one number per variable): */
@@ -83,33 +84,37 @@ namespace calculator {
                 : var{std::move(var)}, term{std::move(term)}, op{op} {}
 
         double operator()(state_t &s) const override {
+            // the value we want to use in the assignment
             double value = (*term)(s);
+
+            // get a reference to the variable in the state, so we can modify it
+            double* var_value = &s[var->id()];
 
             switch (op) {
                 case op_t::assign:
-                    s[var->id()] = value;
+                    *var_value = value;
                     break;
                 case op_t::plus:
-                    s[var->id()] += value;
+                    *var_value += value;
                     break;
                 case op_t::minus:
-                    s[var->id()] -= value;
+                    *var_value -= value;
                     break;
                 case op_t::mul:
-                    s[var->id()] *= value;
+                    *var_value *= value;
                     break;
                 case op_t::div:
                     if (value == 0) {
                         throw std::logic_error{"division by zero"};
                     }
 
-                    s[var->id()] /= value;
+                    *var_value /= value;
                     break;
                 default:
                     throw std::logic_error{"invalid assignment operator"};
             }
 
-            return s[var->id()];
+            return *var_value;
         }
     };
 
@@ -151,16 +156,13 @@ namespace calculator {
             double rhs = (*m_rhs)(s);
 
             switch (op) {
-                using
-                enum calculator::op_t;
-
-                case plus:
+                case op_t::plus:
                     return lhs + rhs;
-                case minus:
+                case op_t::minus:
                     return lhs - rhs;
-                case mul:
+                case op_t::mul:
                     return lhs * rhs;
-                case div:
+                case op_t::div:
                     if (rhs == 0) {
                         throw std::logic_error{"division by zero"};
                     }
