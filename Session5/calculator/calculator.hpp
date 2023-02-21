@@ -202,6 +202,11 @@ namespace calculator {
         expr_t(const var_t &v, const expr_t &e) {
             m_term = std::make_shared<assign_t>(std::make_shared<var_t>(v), e.m_term, op_t::assign);
         }
+        
+        // const constructor
+        expr_t(int i) {
+            m_term = std::make_shared<const_t>(i);
+        }
 
         // call operator 
         double operator()(state_t &s) const {

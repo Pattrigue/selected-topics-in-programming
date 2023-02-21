@@ -66,13 +66,12 @@ TEST_CASE("Calculate expressions lazily")
         CHECK((a + a * b)(state) == 8);
         CHECK((a - b / a)(state) == 0.5);
     }
-    /*
-    // TODO: implement support for constant expressions
     SUBCASE("Constant expressions")
     {
         CHECK((7 + a)(state) == 9);
         CHECK((a - 7)(state) == -5);
     }
+    /*
     SUBCASE("Store expression and evaluate lazily")
     {
         auto expr = (a + b) * c;
