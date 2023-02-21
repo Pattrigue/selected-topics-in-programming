@@ -6,17 +6,18 @@
 #include <memory>
 #include <algorithm>
 #include <stdexcept>
+#include <iostream>
 
 namespace calculator {
     /** Type to capture the state of entire calculator (one number per variable): */
     using state_t = std::vector<double>;
 
     /** Forward declarations to get around circular dependencies: */
-    struct expr_t;
-    
-    enum op_t {
+    class expr_t;
+
+    enum class op_t {
         plus, minus, mul, div, assign
-    } op;
+    };
 
     class term_t {
     public:
@@ -52,13 +53,13 @@ namespace calculator {
         double operator()(state_t &s) const override {
             return s[m_id];
         }
-
+        
         [[nodiscard]] size_t id() const {
             return m_id;
         }
 
         /** evaluates an assignment to a given expression and returns the resulting value */
-        double operator()(state_t &, const expr_t &) const;
+        double operator()(state_t&, const expr_t&) const;
 
         friend class symbol_table_t;
     };
@@ -70,81 +71,87 @@ namespace calculator {
 
         op_t op;
     public:
-        assign_t(std::shared_ptr<var_t> var, std::shared_ptr<term_t> term, op_t op) 
-            : var{std::move(var)}, term{std::move(term)}, op{op} {} 
+        assign_t(std::shared_ptr<var_t> var, std::shared_ptr<term_t> term, op_t op)
+                : var{std::move(var)}, term{std::move(term)}, op{op} {}
 
         double operator()(state_t &s) const override {
             double value = (*term)(s);
             
             switch (op) {
-                case plus:
-                    s[var->id()] += value;
-                    break;
-                case minus:
-                    s[var->id()] -= value;
-                    break;
-                case mul:
-                    s[var->id()] *= value;
-                    break;
-                case div:
-                    s[var->id()] /= value;
-                    break;
-                case assign:
+                case op_t::assign:
                     s[var->id()] = value;
                     break;
+                case op_t::plus:
+                    s[var->id()] += value;
+                    break;
+                case op_t::minus:
+                    s[var->id()] -= value;
+                    break;
+                case op_t::mul:
+                    s[var->id()] *= value;
+                    break;
+                case op_t::div:
+                    if (value == 0) {
+                        throw std::logic_error{"division by zero"};
+                    }
+
+                    s[var->id()] /= value;
+                    break;
+                default:
+                    throw std::logic_error{"invalid assignment operator"};
             }
-            
+
             return value;
         }
     };
-    
+
     /** Class representing a unary operator */
     class unary_t : public term_t {
         std::shared_ptr<term_t> term;
         op_t op;
     public:
-        unary_t(std::shared_ptr<term_t> term, op_t op) 
-            : term{std::move(term)}, op{op} {} 
+        unary_t(std::shared_ptr<term_t> term, op_t op)
+                : term{std::move(term)}, op{op} {}
 
         double operator()(state_t &s) const override {
             double value = (*term)(s);
-            
+
             switch (op) {
-                case plus:
+                case op_t::plus:
                     return value;
-                case minus:
+                case op_t::minus:
                     return -value;
                 default:
                     throw std::logic_error{"invalid unary operator"};
             }
         }
     };
-    
+
     /** Class representing a binary operator */
     class binary_t : public term_t {
-        std::shared_ptr<term_t> term1;
-        std::shared_ptr<term_t> term2;
+        std::shared_ptr<term_t> m_lhs;
+        std::shared_ptr<term_t> m_rhs;
         op_t op;
     public:
-        binary_t(std::shared_ptr<term_t> term1, std::shared_ptr<term_t> term2, op_t op)
-                : term1{std::move(term1)}, term2{std::move(term2)}, op{op} {}
+        binary_t(std::shared_ptr<term_t> lhs, std::shared_ptr<term_t> rhs, op_t op)
+                : m_lhs{std::move(lhs)}, m_rhs{std::move(rhs)}, op{op} {}
 
         double operator()(state_t &s) const override {
-            double lhs = (*term1)(s);
-            double rhs = (*term2)(s);
+            double lhs = (*m_lhs)(s);
+            double rhs = (*m_rhs)(s);
 
             switch (op) {
-                case plus:
+                case op_t::plus:
                     return lhs + rhs;
-                case minus:
+                case op_t::minus:
                     return lhs - rhs;
-                case mul:
+                case op_t::mul:
                     return lhs * rhs;
-                case div:
+                case op_t::div:
                     if (rhs == 0) {
                         throw std::logic_error{"division by zero"};
                     }
-                    
+
                     return lhs / rhs;
                 default:
                     throw std::logic_error{"invalid binary operator"};
@@ -172,170 +179,43 @@ namespace calculator {
 
 
     struct expr_t {
-        std::unique_ptr<var_t> var;
-        std::vector<std::unique_ptr<expr_t>> operands;
-
-        enum op_t_old {
-            plus, minus, add, sub, mul, div, assign
-        } op_old;
-
-        expr_t(const expr_t &other) {
-            *this = other;
+        std::shared_ptr<term_t> m_term;
+        
+        // unary operator constructor
+        expr_t(const var_t& e, op_t op) {
+            m_term = std::make_shared<unary_t>(std::make_shared<var_t>(e), op);
         }
-
-        expr_t &operator=(const expr_t &other) {
-            op_old = other.op_old;
-            var = other.var ? std::make_unique<var_t>(*other.var) : nullptr;
-
-            operands.resize(other.operands.size());
-
-            std::transform(other.operands.begin(), other.operands.end(), operands.begin(),
-                           [](const auto &ptr) {
-                               return std::make_unique<expr_t>(*ptr);
-                           });
-
-            return *this;
+        
+        // binary operator constructor
+        expr_t(const var_t& e1, const var_t& e2, op_t op) {
+            m_term = std::make_shared<binary_t>(std::make_shared<var_t>(e1), std::make_shared<var_t>(e2), op);
         }
-
-        expr_t(expr_t &&other) noexcept = default;
-
-        expr_t &operator=(expr_t &&other) noexcept = default;
-
-        ~expr_t() noexcept = default;
-
-        expr_t(const var_t &v, op_t_old op_old = plus)
-                : var{std::make_unique<var_t>(v)}, op_old{op_old} {}
-
-        expr_t(const var_t &v, const expr_t &e)
-                : var{std::make_unique<var_t>(v)}, operands(1), op_old{assign} {
-            operands[0] = std::make_unique<expr_t>(e);
+        
+        // assignment constructor
+        expr_t(const var_t& v, const expr_t& e) {
+            std::cout << "guh" << std::endl;
+            m_term = std::make_shared<assign_t>(std::make_shared<var_t>(v), e.m_term, op_t::assign);
         }
-
-        expr_t(const expr_t &e, op_t_old op_old) : operands(1), op_old{op_old} {
-            operands[0] = std::make_unique<expr_t>(e);
-        }
-
-        expr_t(const expr_t &e1, const expr_t &e2, op_t_old op_old)
-                : operands(2), op_old{op_old} {
-            operands[0] = std::make_unique<expr_t>(e1);
-            operands[1] = std::make_unique<expr_t>(e2);
-        }
-
+        
+        // call operator 
         double operator()(state_t &s) const {
-            if (var) {
-                auto &v = *var;
-
-                switch (op_old) {
-                    case expr_t::plus:
-                        return v(s);
-                    case expr_t::minus:
-                        return -v(s);
-                    case expr_t::assign:
-                        if (operands.empty()) {
-                            throw std::logic_error{"missing expression to evaluate"};
-                        }
-
-                        return v(s, *operands[0]);
-                    default:
-                        throw std::logic_error{"unsupported operation over a variable"};
-                }
-            } else {
-                auto &e1 = *operands[0];
-
-                switch (op_old) {
-                    case expr_t::plus:
-                        if (operands.empty()) {
-                            throw std::logic_error{"bug: missing an operand for unary +"};
-                        }
-
-                        return e1(s);
-                    case expr_t::minus:
-                        if (operands.empty()) {
-                            throw std::logic_error{"bug: missing an operand for unary -"};
-                        }
-
-                        return -e1(s);
-                    case expr_t::add: {
-                        if (operands.size() != 2) {
-                            throw std::logic_error{"bug: expecting two operands for binary +"};
-                        }
-
-                        auto &e2 = *operands[1];
-
-                        return e1(s) + e2(s);
-                    }
-                    case expr_t::sub: {
-                        if (operands.size() != 2) {
-                            throw std::logic_error{"bug: expecting two operands for binary -"};
-                        }
-
-                        auto &e2 = *operands[1];
-
-                        return e1(s) - e2(s);
-                    }
-                    case expr_t::mul: {
-                        if (operands.size() != 2) {
-                            throw std::logic_error{"bug: expecting two operands for binary *"};
-                        }
-
-                        auto &e2 = *operands[1];
-
-                        return e1(s) * e2(s);
-                    }
-                    case expr_t::div: {
-                        if (operands.size() != 2) {
-                            throw std::logic_error{"bug: expecting two operands for binary /"};
-                        }
-
-                        auto &e2 = *operands[1];
-
-                        if (e2(s) == 0) {
-                            throw std::logic_error{"division by zero"};
-                        }
-
-                        return e1(s) / e2(s);
-                    }
-                    default:
-                        throw std::logic_error{"not implemented"};
-                }
-            }
+            return (*m_term)(s);
         }
     };
-
+    
     /** assignment operation */
-    inline double var_t::operator()(state_t &s, const expr_t &e) const {
-        return s[m_id] = e(s);
-    }
+    inline double var_t::operator()(state_t& s, const expr_t& e) const { return s[m_id] = e(s); }
 
     /** unary operators: */
-    inline expr_t operator+(const expr_t &e) {
-        return expr_t{e, expr_t::plus};
-    }
-
-    inline expr_t operator-(const expr_t &e) {
-        return expr_t{e, expr_t::minus};
-    }
-
+    inline expr_t operator+(const var_t& e) { return expr_t{e, op_t::plus}; }
+    inline expr_t operator-(const var_t& e) { return expr_t{e, op_t::minus}; }
+    
     /** binary operators: */
-    inline expr_t operator+(const expr_t &e1, const expr_t &e2) {
-        return expr_t{e1, e2, expr_t::add};
-    }
-
-    inline expr_t operator-(const expr_t &e1, const expr_t &e2) {
-        return expr_t{e1, e2, expr_t::sub};
-    }
-
-    inline expr_t operator*(const expr_t &e1, const expr_t &e2) {
-        return expr_t{e1, e2, expr_t::mul};
-    }
-
-    inline expr_t operator/(const expr_t &e1, const expr_t &e2) {
-        return expr_t{e1, e2, expr_t::div};
-    }
-
-    inline expr_t operator<<=(const var_t &v, const expr_t &e) {
-        return expr_t{v, e};
-    }
+    inline expr_t operator+(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::plus}; }
+    inline expr_t operator-(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::minus}; }
+    inline expr_t operator*(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::mul}; }
+    inline expr_t operator/(const var_t& e1, const var_t& e2) { return expr_t{e1, e2, op_t::div}; }
+    inline expr_t operator<<=(const var_t& v, const expr_t& e) { return expr_t{v, e}; }
 }
 
 #endif // INCLUDE_ALGEBRA_HPP
