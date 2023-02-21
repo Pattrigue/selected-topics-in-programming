@@ -23,9 +23,8 @@ namespace calculator {
     public:
         term_t() = default;
 
-        ~term_t() noexcept = default;
+        virtual ~term_t() noexcept = default;
 
-        // pure virtual double operator() (state_t &s) const:
         virtual double operator()(state_t &s) const = 0;
     };
 
@@ -143,13 +142,15 @@ namespace calculator {
             double rhs = (*m_rhs)(s);
 
             switch (op) {
-                case op_t::plus:
+                using enum calculator::op_t;
+                
+                case plus:
                     return lhs + rhs;
-                case op_t::minus:
+                case minus:
                     return lhs - rhs;
-                case op_t::mul:
+                case mul:
                     return lhs * rhs;
-                case op_t::div:
+                case div:
                     if (rhs == 0) {
                         throw std::logic_error{"division by zero"};
                     }
@@ -204,10 +205,6 @@ namespace calculator {
         }
         
         // const constructor
-        expr_t(int i) {
-            m_term = std::make_shared<const_t>(i);
-        }
-        
         expr_t(double i) {
             m_term = std::make_shared<const_t>(i);
         }
