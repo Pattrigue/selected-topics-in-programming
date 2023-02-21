@@ -27,7 +27,9 @@ namespace calculator {
         var_t &operator=(const var_t &) = default;
 
         /** returns the value of the variable stored in a state */
-        double operator()(const state_t &s) const { return s[id]; }
+        double operator()(const state_t &s) const { 
+            return s[id]; 
+        }
 
         /** evaluates an assignment to a given expression and returns the resulting value */
         double operator()(state_t &, const expr_t &) const;
@@ -41,18 +43,23 @@ namespace calculator {
     public:
         [[nodiscard]] var_t var(std::string name, double init = 0) {
             auto res = names.size();
+            
             names.push_back(std::move(name));
             initial.push_back(init);
+            
             return var_t{res};
         }
 
-        [[nodiscard]] state_t state() const { return {initial}; }
+        [[nodiscard]] state_t state() const { 
+            return {initial}; 
+        }
     };
 
 
     struct expr_t {
         std::unique_ptr<var_t> var;
         std::vector<std::unique_ptr<expr_t>> operands;
+        
         enum op_t {
             plus, minus, add, sub, mul, div, assign
         } op;
