@@ -67,7 +67,6 @@ TEST_CASE("Calculate expressions lazily")
         CHECK((a - 7)(state) == -5);
         CHECK((a + 3.14)(state) == doctest::Approx(5.14));
     }
-    /*
     SUBCASE("Store expression and evaluate lazily")
     {
         auto expr = (a + b) * c;
@@ -76,5 +75,4 @@ TEST_CASE("Calculate expressions lazily")
         CHECK(c_4(state) == 4);
         CHECK(expr(state) == 20);
     }
-    */
 }
