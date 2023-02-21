@@ -53,7 +53,6 @@ namespace calculator {
     struct expr_t {
         std::unique_ptr<var_t> var;
         std::vector<std::unique_ptr<expr_t>> operands;
-        
         enum op_t {
             plus, minus, add, sub, mul, div, assign
         } op;
@@ -82,10 +81,10 @@ namespace calculator {
 
         ~expr_t() noexcept = default;
 
-        explicit expr_t(const var_t &v, op_t op = plus)
+        expr_t(const var_t &v, op_t op = plus) 
                 : var{std::make_unique<var_t>(v)}, op{op} {}
 
-        expr_t(const var_t &v, const expr_t &e)
+        expr_t(const var_t &v, const expr_t &e) 
                 : var{std::make_unique<var_t>(v)}, operands(1), op{assign} {
             operands[0] = std::make_unique<expr_t>(e);
         }
