@@ -103,7 +103,7 @@ namespace calculator {
                     throw std::logic_error{"invalid assignment operator"};
             }
 
-            return value;
+            return s[var->id()];
         }
     };
 
@@ -199,8 +199,8 @@ namespace calculator {
         }
 
         // assignment constructor
-        expr_t(const var_t &v, const expr_t &e) {
-            m_term = std::make_shared<assign_t>(std::make_shared<var_t>(v), e.m_term, op_t::assign);
+        expr_t(const var_t &v, const expr_t &e, op_t op) {
+            m_term = std::make_shared<assign_t>(std::make_shared<var_t>(v), e.m_term, op);
         }
         
         // const constructor
@@ -238,8 +238,12 @@ namespace calculator {
     inline expr_t operator*(const expr_t &e1, const expr_t &e2) { return expr_t{e1, e2, op_t::mul}; }
 
     inline expr_t operator/(const expr_t &e1, const expr_t &e2) { return expr_t{e1, e2, op_t::div}; }
-
-    inline expr_t operator<<=(const var_t &v, const expr_t &e) { return expr_t{v, e}; }
+    
+    inline expr_t operator<<=(const var_t &v, const expr_t &e) { return expr_t{v, e, op_t::assign}; }
+    
+    inline expr_t operator+=(const var_t &v, const expr_t &e) { return expr_t{v, e, op_t::plus}; }
+    
+    inline expr_t operator-=(const var_t &v, const expr_t &e) { return expr_t{v, e, op_t::minus}; }
 }
 
 #endif // INCLUDE_ALGEBRA_HPP
