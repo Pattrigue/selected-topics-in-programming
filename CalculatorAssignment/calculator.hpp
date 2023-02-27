@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>
-#include <valarray>
+
 
 namespace calculator {
     /** Type to capture the state of entire calculator (one number per variable): */
