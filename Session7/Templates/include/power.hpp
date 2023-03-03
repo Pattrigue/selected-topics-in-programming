@@ -17,4 +17,15 @@ T power(T number, std::size_t p)
 	return res;
 }
 
+// compile-time power implementation
+template <std::size_t Base, std::size_t Exp>
+struct Power {
+	static constexpr std::size_t value = Base * Power<Base, Exp - 1>::value;
+};
+
+template <std::size_t Base>
+struct Power<Base, 0> {
+	static constexpr std::size_t value = 1;
+};
+
 #endif	// TEMPLATES_POWER_HPP
