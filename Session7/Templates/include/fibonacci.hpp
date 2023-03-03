@@ -12,5 +12,18 @@ T fib(std::size_t i)
 		return fib<T>(i-1) + fib<T>(i-2);
 }
 
+// compile-time Fibonacci sequence implementation
+template <std::size_t N>
+struct Fib {
+	static constexpr std::size_t value = Fib<N-1>::value + Fib<N-2>::value;
+};
+
+template <>
+struct Fib<0> {
+	static constexpr std::size_t value = 1u;
+};
+
+template <>
+struct Fib<1> : Fib<0> {}; // inherit from Fib<0> to get the value
 
 #endif	// TEMPLATES_FIBONACCI_HPP
