@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <unordered_set>
 #include "meta.hpp"
 
 
@@ -30,15 +31,18 @@ struct json_ostream
     }
 
     /** overload the << operator for string values */
-    template <String S>
-    json_ostream& operator<<(const S& value) {
-        // TODO: do not put quotes around special values in a more elegant way
-        if (value == ":" || value == "," || value == "{" || value == "}" || value == "[" || value == "]" || value == "true" || value == "false" || value == "null") {
+    template <typename T>
+    json_ostream& operator<<(const T& value) {
+        static const std::unordered_set<std::string> special_chars = { 
+            ":", ",", "{", "}", "[", "]", "true", "false", "null" 
+        };
+
+        if (special_chars.find(value) != special_chars.end()) {
             os << value;
-            return *this;
+        } else {
+            os << '"' << value << '"';
         }
-        
-        os << '"' << value << '"';
+
         return *this;
     }
 
