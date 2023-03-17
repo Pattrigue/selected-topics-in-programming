@@ -2,6 +2,8 @@
 #define STATIC_VISITOR_JSON_OUTPUT_HPP
 
 #include <iostream>
+#include <string>
+#include <sstream>
 #include "meta.hpp"
 
 /** TODO: implement json_ostream adapter with json output operations
@@ -10,79 +12,138 @@
 struct json_ostream
 {
     std::ostream& os;
+
+    /** Overload the << operator for boolean values */
+    template <Boolean B>
+    void operator<<(const B& value) {
+        os << (value ? "true" : "false");
+    }
+
+    /** Overload the << operator for number values */
+    template <Number N>
+    void operator<<(const N& value) {
+        os << value;
+    }
+
+    /** Overload the << operator for string values */
+    template <String S>
+    void operator<<(const S& value) {
+        os << '"' << value << '"';
+    }
+
+    /** Overload the << operator for container values */
+    template <Container C>
+    void operator<<(const C& value) {
+        os << '[';
+
+        for (auto it = value.begin(); it != value.end(); ++it)
+        {
+            if (it != value.begin()) {
+                os << ',';
+            }
+            
+            os << *it;
+        }
+
+        os << ']';
+    }
 };
 
 
-/** Visitor pattern support for writing JSON */
 struct json_writer_t
 {
-    template <typename Data>
-    void visit(const std::string& name, const Data& value)
-    {
-        /** TODO: use static visitor pattern to write class fields into output stream */
+    json_ostream& out;
+
+    json_writer_t(json_ostream& out) : out(out) {}
+
+    // write JSON null
+    void visit(const std::string& name, std::nullptr_t) {
+        out << "null";
+    }
+
+    // write JSON boolean
+    template <Boolean B>
+    void visit(const std::string& name, const B& value) {
+        out << (value ? "true" : "false");
+    }
+
+    // write JSON number
+    template <Number N>
+    void visit(const std::string& name, const N& value) {
+        out << value;
+    }
+
+    // write JSON string
+    template <String S>
+    void visit(const std::string& name, const S& value) {
+        out << '"';
+        
+        for (char c : value)
+        {
+            switch (c)
+            {
+                case '\"': out << "\\\""; break;
+                case '\\': out << "\\\\"; break;
+                case '\b': out << "\\b"; break;
+                case '\f': out << "\\f"; break;
+                case '\n': out << "\\n"; break;
+                case '\r': out << "\\r"; break;
+                case '\t': out << "\\t"; break;
+                default: out << c; break;
+            }
+        }
+        out << '"';
+    }
+
+    // write JSON container
+    template <Container T>
+    void visit(const std::string& name, const T& value) {
+        out << '[';
+        
+        for (const auto& item : value) {
+            if (&item != &value.front()) {
+                out << ',';
+            }
+            
+            out << item;
+        }
+        
+        out << ']';
+    }
+
+    // write JSON aggregate
+    template <typename T>
+    void visit(const std::string& name, const T& value) {
+        out << '{';
+        
+        for_each_field(value, [&](auto&& field_name, auto&& field_value) {
+            if (&field_value != &value)
+            {
+                out << ',';
+            }
+            
+            visit(field_name, field_value);
+            out << ':';
+            visit(field_name, field_value);
+        });
+        
+        out << '}';
     }
 };
 
-//template <typename T>
-//json_ostream& operator<<(json_ostream& j, const T&)
-//{
-//    /** TODO: implement output of arbitrary types so that tests in json_test pass
-//     * Focus on one test in json_test at a time: begin from the first and then continue to next.
-//     * In order to support various types, develop and test meta-predicates (see meta_test.cpp)
-//     * Tip: either use if-constexpr or overloading with SFINAE/concepts
-//     */
-//
-//    return j;
-//}
 
-
-/** Overload the << operator for boolean values */
-template <Boolean B>
-json_ostream& operator<<(json_ostream& j, const B& value)
+template <typename T>
+json_writer_t& operator<<(json_writer_t& j, const T& value)
 {
-    j.os << (value ? "true" : "false");
+    j.visit("", value);
     return j;
 }
 
-
-/** Overload the << operator for number values */
-template <Number N>
-json_ostream& operator<<(json_ostream& j, const N& value)
+template <typename T>
+json_writer_t& operator<<(json_writer_t&& j, const T& value)
 {
-    j.os << value;
-    return j;
+    return j << value;
 }
 
-/** Overload the << operator for string values */
-template <String S>
-json_ostream& operator<<(json_ostream& j, const S& value)
-{
-    j.os << '"' << value << '"';
-    return j;
-}
-
-/** Overload the << operator for container values */
-template <Container C>
-json_ostream& operator<<(json_ostream& j, const C& value)
-{
-    j.os << '[';
-    
-    for (auto it = value.begin(); it != value.end(); ++it)
-    {
-        if (it != value.begin())
-            j.os << ',';
-        j << *it;
-    }
-    
-    j.os << ']';
-    
-    return j;
-}
-
-//template <typename T>
-//json_ostream& operator<<(json_ostream&& j, const T& value)
-//{
-//    return j << value;
-//}
 
 #endif  // STATIC_VISITOR_JSON_OUTPUT_HPP
