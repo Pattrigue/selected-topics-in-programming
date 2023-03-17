@@ -13,10 +13,6 @@ struct json_ostream
 {
     std::ostream& os;
     
-    json_ostream(std::ostream& os) : os(os) {
-        os << "{";
-    }
-    
     /** overload the << operator for boolean values */
     template <Boolean B>
     json_ostream& operator<<(const B& value) {
@@ -62,6 +58,10 @@ struct json_ostream
         return *this;
     }
     
+    void open() {
+        os << '{';
+    }
+    
     void close() {
         os << '}';
     }
@@ -74,15 +74,15 @@ struct json_writer_t
     
     json_writer_t(json_ostream& out) : out(out) {}
     
-    bool first = true;
+    bool isFirst = true;
     
-    /** Helper function to write keys so that commas are added between fields, but not before the first one */
+    /** Helper function to write keys so that commas are added between fields, but not before the isFirst one */
     std::string write_key(const std::string& key) {
-        if (!first) {
+        if (!isFirst) {
             out.os << ',';
         }
-        
-        first = false;
+
+        isFirst = false;
         
         return key;
     }
@@ -90,8 +90,21 @@ struct json_writer_t
     /** the main driver method for writing JSON */
     template <typename Data>
     void visit(const std::string& key, const Data& value) {
+        if (!key.empty()) {
+            out << write_key(key) << ":";
+        }
+        
+        /** save the isFirst flag to handle nested objects */
+        bool was_first = isFirst;
+
+        isFirst = true;
+        
+        out.open();
         value.accept(*this);
         out.close();
+        
+        /** restore the isFirst flag */
+        isFirst = was_first;
     }
     
     /** write JSON null */
