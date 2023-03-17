@@ -14,7 +14,7 @@ using namespace std::string_literals;
 //    json_ostream{os} << agg;
 //    return os;
 //}
-//
+
 ///** Output operator just for friendly output in tests: */
 //std::ostream& operator<<(std::ostream& os, const nested_t& nested)
 //{
@@ -69,7 +69,6 @@ TEST_CASE("JSON output")
         jos << v;
         CHECK(os.str() == "[3,7,11]");
     }
-    /*
     SUBCASE("aggregate")
     {
         auto v = aggregate_t{true, 3, 3.14, "hello", {7, 11}};
@@ -77,6 +76,7 @@ TEST_CASE("JSON output")
         jos << v;
         CHECK(os.str() == R"({"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]})");
     }
+    /*
     SUBCASE("nested")
     {
         const auto v = nested_t{"complicated", {true, 3, 3.14, "hello", {7, 11}}};

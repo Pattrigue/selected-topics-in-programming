@@ -12,32 +12,46 @@
 struct json_ostream
 {
     std::ostream& os;
-
+    
+    bool first = true;
+    
+    json_ostream(std::ostream& os) : os(os) {
+        os << "{";
+    }
+    
     /** Overload the << operator for boolean values */
     template <Boolean B>
-    void operator<<(const B& value) {
+    json_ostream& operator<<(const B& value) {
         os << (value ? "true" : "false");
+        return *this;
     }
 
     /** Overload the << operator for number values */
     template <Number N>
-    void operator<<(const N& value) {
+    json_ostream& operator<<(const N& value) {
         os << value;
+        return *this;
     }
 
     /** Overload the << operator for string values */
     template <String S>
-    void operator<<(const S& value) {
+    json_ostream& operator<<(const S& value) {
+        // TODO: do not put quotes around special values in a more elegant way
+        if (value == ":" || value == "," || value == "{" || value == "}" || value == "[" || value == "]" || value == "true" || value == "false" || value == "null") {
+            os << value;
+            return *this;
+        }
+        
         os << '"' << value << '"';
+        return *this;
     }
 
     /** Overload the << operator for container values */
     template <Container C>
-    void operator<<(const C& value) {
+    json_ostream& operator<<(const C& value) {
         os << '[';
 
-        for (auto it = value.begin(); it != value.end(); ++it)
-        {
+        for (auto it = value.begin(); it != value.end(); ++it) {
             if (it != value.begin()) {
                 os << ',';
             }
@@ -46,6 +60,12 @@ struct json_ostream
         }
 
         os << ']';
+        
+        return *this;
+    }
+    
+    void close() {
+        os << '}';
     }
 };
 
@@ -53,35 +73,51 @@ struct json_ostream
 struct json_writer_t
 {
     json_ostream& out;
-
+    
     json_writer_t(json_ostream& out) : out(out) {}
-
+    
+    bool first = true;
+    
+    std::string write_key(const std::string& name) {
+        if (!first) {
+            out.os << ',';
+        }
+        
+        first = false;
+        
+        return name;
+    }
+    
+    template <typename Data>
+    void visit(const std::string& key, const Data& value) {
+        value.accept(*this);
+        out.close();
+    }
+    
     // write JSON null
-    void visit(const std::string& name, std::nullptr_t) {
-        out << "null";
+    void visit(const std::string& key, std::nullptr_t) {
+         out << write_key(key) << ":null";
     }
 
     // write JSON boolean
     template <Boolean B>
-    void visit(const std::string& name, const B& value) {
-        out << (value ? "true" : "false");
+    void visit(const std::string& key, const B& value) {
+        out << write_key(key) << ":" << value;
     }
 
     // write JSON number
     template <Number N>
-    void visit(const std::string& name, const N& value) {
-        out << value;
+    void visit(const std::string& key, const N& value) {
+        out << write_key(key) << ":" << value;
     }
 
     // write JSON string
     template <String S>
-    void visit(const std::string& name, const S& value) {
-        out << '"';
+    void visit(const std::string& key, const S& value) {
+        out << write_key(key) << ":" << '"';
         
-        for (char c : value)
-        {
-            switch (c)
-            {
+        for (char c : value) {
+            switch (c) {
                 case '\"': out << "\\\""; break;
                 case '\\': out << "\\\\"; break;
                 case '\b': out << "\\b"; break;
@@ -92,13 +128,14 @@ struct json_writer_t
                 default: out << c; break;
             }
         }
+        
         out << '"';
     }
 
     // write JSON container
     template <Container T>
-    void visit(const std::string& name, const T& value) {
-        out << '[';
+    void visit(const std::string& key, const T& value) {
+        out << write_key(key) << ':' << '[';
         
         for (const auto& item : value) {
             if (&item != &value.front()) {
@@ -109,25 +146,6 @@ struct json_writer_t
         }
         
         out << ']';
-    }
-
-    // write JSON aggregate
-    template <typename T>
-    void visit(const std::string& name, const T& value) {
-        out << '{';
-        
-        for_each_field(value, [&](auto&& field_name, auto&& field_value) {
-            if (&field_value != &value)
-            {
-                out << ',';
-            }
-            
-            visit(field_name, field_value);
-            out << ':';
-            visit(field_name, field_value);
-        });
-        
-        out << '}';
     }
 };
 
