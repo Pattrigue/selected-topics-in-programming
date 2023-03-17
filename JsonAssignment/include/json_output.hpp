@@ -13,27 +13,25 @@ struct json_ostream
 {
     std::ostream& os;
     
-    bool first = true;
-    
     json_ostream(std::ostream& os) : os(os) {
         os << "{";
     }
     
-    /** Overload the << operator for boolean values */
+    /** overload the << operator for boolean values */
     template <Boolean B>
     json_ostream& operator<<(const B& value) {
         os << (value ? "true" : "false");
         return *this;
     }
 
-    /** Overload the << operator for number values */
+    /** overload the << operator for number values */
     template <Number N>
     json_ostream& operator<<(const N& value) {
         os << value;
         return *this;
     }
 
-    /** Overload the << operator for string values */
+    /** overload the << operator for string values */
     template <String S>
     json_ostream& operator<<(const S& value) {
         // TODO: do not put quotes around special values in a more elegant way
@@ -46,7 +44,7 @@ struct json_ostream
         return *this;
     }
 
-    /** Overload the << operator for container values */
+    /** overload the << operator for container values */
     template <Container C>
     json_ostream& operator<<(const C& value) {
         os << '[';
@@ -78,40 +76,42 @@ struct json_writer_t
     
     bool first = true;
     
-    std::string write_key(const std::string& name) {
+    /** Helper function to write keys so that commas are added between fields, but not before the first one */
+    std::string write_key(const std::string& key) {
         if (!first) {
             out.os << ',';
         }
         
         first = false;
         
-        return name;
+        return key;
     }
-    
+
+    /** the main driver method for writing JSON */
     template <typename Data>
     void visit(const std::string& key, const Data& value) {
         value.accept(*this);
         out.close();
     }
     
-    // write JSON null
+    /** write JSON null */
     void visit(const std::string& key, std::nullptr_t) {
          out << write_key(key) << ":null";
     }
 
-    // write JSON boolean
+    /** write JSON boolean */
     template <Boolean B>
     void visit(const std::string& key, const B& value) {
         out << write_key(key) << ":" << value;
     }
 
-    // write JSON number
+    /** write JSON number */
     template <Number N>
     void visit(const std::string& key, const N& value) {
         out << write_key(key) << ":" << value;
     }
 
-    // write JSON string
+    /** write JSON string */
     template <String S>
     void visit(const std::string& key, const S& value) {
         out << write_key(key) << ":" << '"';
@@ -132,7 +132,7 @@ struct json_writer_t
         out << '"';
     }
 
-    // write JSON container
+    /** write JSON container */
     template <Container T>
     void visit(const std::string& key, const T& value) {
         out << write_key(key) << ':' << '[';
