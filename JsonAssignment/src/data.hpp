@@ -37,6 +37,21 @@ struct aggregate_t
     {
         return (a1.b == a2.b) && (a1.x == a2.x) && (a1.y == a2.y) && (a1.z == a2.z) && (a1.w == a2.w);
     }
+    
+    /** print the values for debugging */
+    friend std::ostream& operator<<(std::ostream& os, const aggregate_t& a)
+    {
+        os << "b=" << a.b << ", x=" << a.x << ", y=" << a.y << ", z=" << a.z << ", w=[";
+        for (auto i : a.w) {
+            os << i;
+            
+            if (i != a.w.back()) {
+                os << ", ";
+            }
+        }
+        os << "]";
+        return os;
+    }
 };
 
 /** custom class to test JSON input/output with nesting */
