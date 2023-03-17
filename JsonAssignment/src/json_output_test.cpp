@@ -76,7 +76,6 @@ TEST_CASE("JSON output")
         jos << v;
         CHECK(os.str() == R"({"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]})");
     }
-    /*
     SUBCASE("nested")
     {
         const auto v = nested_t{"complicated", {true, 3, 3.14, "hello", {7, 11}}};
@@ -84,5 +83,4 @@ TEST_CASE("JSON output")
         jos << v;
         CHECK(os.str() == R"({"text":"complicated","agg":{"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]}})");
     }
-    */
 }
