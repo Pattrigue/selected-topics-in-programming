@@ -8,7 +8,6 @@
 #include <set>
 #include <map>
 
-/** TODO: fix the meta library to satisfy the assertions below. */
 
 /** is_bool_v tests: */
 static_assert(is_bool_v<bool>, "bool is a bool");
@@ -26,6 +25,7 @@ static_assert(!is_bool_v<float>, "float is not a bool");
 static_assert(!is_bool_v<double>, "double is not a bool");
 static_assert(!is_bool_v<std::string>, "string is not a bool");
 static_assert(!is_bool_v<std::vector<bool>>, "vector of bool is not a bool");
+
 
 /** is_number_v tests: */
 static_assert(is_number_v<uint8_t>, "uint8_t is a number");
@@ -47,6 +47,7 @@ static_assert(!is_bool_v<char>, "char is not a number");
 static_assert(!is_bool_v<std::string>, "string is not a number");
 static_assert(!is_bool_v<std::vector<int>>, "vector of int is not a number");
 
+
 /** is_character_v tests: */
 static_assert(is_character_v<char>, "char is a character");
 static_assert(is_character_v<char&>, "reference to char is a character");
@@ -66,6 +67,7 @@ static_assert(!is_character_v<double>, "double is not a character");
 static_assert(!is_character_v<std::string>, "string is not a character");
 static_assert(!is_character_v<std::vector<char>>, "vector of char is not a character");
 
+
 /** is_string_v tests: */
 static_assert(is_string_v<std::string>, "string is a string");
 static_assert(is_string_v<std::string&>, "reference to a string is a string");
@@ -83,6 +85,7 @@ static_assert(!is_string_v<int>, "int is not a string");
 static_assert(!is_string_v<float>, "float is not a string");
 static_assert(!is_string_v<double>, "double is not a string");
 static_assert(!is_string_v<std::vector<char>>, "vector of char is not a string");
+
 
 /** is_container_v tests: */
 static_assert(is_container_v<std::vector<int>>, "vector of int is a container");
