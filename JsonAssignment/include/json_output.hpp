@@ -6,12 +6,14 @@
 #include <sstream>
 #include "meta.hpp"
 
-/** TODO: implement json_ostream adapter with json output operations
- * The goal is to exercise meta-programming and not have complete JSON (Unicode support is beyond the scope).
- */
+
 struct json_ostream
 {
     std::ostream& os;
+    
+    void open() { os << '{'; }
+
+    void close() { os << '}'; }
     
     /** overload the << operator for boolean values */
     template <Boolean B>
@@ -56,14 +58,6 @@ struct json_ostream
         os << ']';
         
         return *this;
-    }
-    
-    void open() {
-        os << '{';
-    }
-    
-    void close() {
-        os << '}';
     }
 };
 

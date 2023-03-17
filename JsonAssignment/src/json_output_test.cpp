@@ -5,22 +5,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-
 using namespace std::string_literals;
 
-///** Output operator just for friendly output in tests: */
-//std::ostream& operator<<(std::ostream& os, const aggregate_t& agg)
-//{
-//    json_ostream{os} << agg;
-//    return os;
-//}
-
-///** Output operator just for friendly output in tests: */
-//std::ostream& operator<<(std::ostream& os, const nested_t& nested)
-//{
-//    json_ostream{os} << nested;
-//    return os;
-//}
 
 TEST_CASE("JSON output")
 {
