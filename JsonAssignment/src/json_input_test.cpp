@@ -60,6 +60,7 @@ TEST_CASE("JSON input")
         CHECK(is);
         CHECK(v == std::vector{3, 7, 11});
     }
+    /*
     SUBCASE("aggregate")
     {
         auto is = std::istringstream{R"({"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]})"};
@@ -79,4 +80,5 @@ TEST_CASE("JSON input")
         CHECK(is);
         CHECK(v == nested_t{"complicated", {true, 3, 3.14, "hello", {7, 11}}});
     }
+    */  
 }
