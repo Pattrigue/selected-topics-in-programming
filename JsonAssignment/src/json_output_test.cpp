@@ -55,6 +55,8 @@ TEST_CASE("JSON output")
         jos << v;
         CHECK(os.str() == "[3,7,11]");
     }
+    static_assert(!accepts_v<json_writer_t, aggregate_t>, "writer should not accept aggregate");
+    static_assert(!accepts_v<int, double>, "int should not accept double");
     SUBCASE("aggregate")
     {
         auto v = aggregate_t{true, 3, 3.14, "hello", {7, 11}};
