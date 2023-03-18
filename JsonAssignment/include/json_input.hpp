@@ -86,6 +86,19 @@ struct json_reader_t
 {
     json_istream& in;
 
+    /* visitor for nested types **/
+    template <typename Data>
+    void visit(const std::string& name, Data& value) {
+        if constexpr (has_accept_v<Data>) {
+            value.accept(*this);
+        }
+        else {
+            in.is.get(); // consume the '{'
+            value.accept(*this);
+            in.is.get(); // consume the '}'
+        }
+    }
+
     /* visitor for the bool type **/
     void visit(const std::string& key, bool& value) {
         while (in.is.good()) {

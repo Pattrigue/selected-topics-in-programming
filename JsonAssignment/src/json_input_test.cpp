@@ -70,15 +70,14 @@ TEST_CASE("JSON input")
         CHECK(is);
         CHECK(v == aggregate_t{true, 3, 3.14, "hello", {7, 11}});
     }
-//    SUBCASE("nested")
-//    {
-//        auto is =
-//                std::istringstream{R"({"text":"complicated","agg":{"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]}})"};
-//        auto v = nested_t{};
-//        static_assert(accepts_v<nested_t&, json_reader_t>, "does not accept reader");
-//        json_istream{is} >> v;
-//        CHECK(is);
-//        std::cout << v << std::endl;
-//        CHECK(v == nested_t{"complicated", {true, 3, 3.14, "hello", {7, 11}}});
-//    }
+    SUBCASE("nested")
+    {
+        auto is =
+                std::istringstream{R"({"text":"complicated","agg":{"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]}})"};
+        auto v = nested_t{};
+        static_assert(accepts_v<nested_t&, json_reader_t>, "does not accept reader");
+        json_istream{is} >> v;
+        CHECK(is);
+        CHECK(v == nested_t{"complicated", {true, 3, 3.14, "hello", {7, 11}}});
+    }
 }
