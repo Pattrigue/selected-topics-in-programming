@@ -31,7 +31,7 @@ struct json_ostream
     }
 
     /** overload the << operator for string values */
-    template <typename T>
+    template <String T>
     json_ostream& operator<<(const T& value) {
         static const std::unordered_set<std::string> special_chars = { 
             ":", ",", "{", "}", "[", "]", "true", "false", "null" 
