@@ -29,95 +29,54 @@ struct json_istream
 {
     std::istream& is;
     
-    void readBoolean(const std::string& key, bool& value) {
-        while (is.good()) {
-            char c = is.get();
-
-            if (c == '\"') {
-                std::string fieldName;
-                std::getline(is, fieldName, '\"');
-
-                if (fieldName == key) {
-                    is.get(); // consume the ':'
-                    is >> std::boolalpha >> value;
-                    break;
-                }
-            }
-        }
+    /* override the >> operator for boolean values **/
+    json_istream& operator>>(bool& value) {
+        is >> std::boolalpha >> value;
+        return *this;
     }
     
-    void readString(const std::string& key, std::string& value) {
-        while (is.good()) {
-            char c = is.get();
-
-            if (c == '\"') {
-                std::string fieldName;
-                std::getline(is, fieldName, '\"');
-
-                if (fieldName == key) {
-                    is.get(); // consume the ':'
-                    is.get(); // consume the '\"'
-                    std::getline(is, value, '\"');
-                    break;
-                }
-            }
-        }
-    }
-
-    void readNumber(const std::string& key, int& value) {
-        double d;
-        readDouble(key, d);
-        value = static_cast<int>(d);
+    /* override the >> operator for string values **/
+    json_istream& operator>>(std::string& value) {
+        is.get(); // consume the '"'
+        std::getline(is, value, '"');
+        return *this;
     }
     
-    void readDouble(const std::string& key, double& value) {
-        while (is.good()) {
-            char c = is.get();
-
-            if (c == '\"') {
-                std::string fieldName;
-                std::getline(is, fieldName, '\"');
-
-                if (fieldName == key) {
-                    is.get(); // consume the ':'
-                    is >> value;
-                    break;
-                }
-            }
-        }
+    /* override the >> operator for int values **/
+    json_istream& operator>>(int& value) {
+        is >> value;
+        return *this;
     }
     
-    void readContainer(const std::string& key, std::vector<int>& value) {
+    /* override the >> operator for double values **/
+    json_istream& operator>>(double& value) {
+        is >> value;
+        return *this;
+    }
+    
+    /* override the >> operator for vector types **/
+    template <typename T>
+    json_istream& operator>>(std::vector<T>& value) {
+        is.get(); // consume the '['
+  
         while (is.good()) {
             char c = is.get();
-
-            if (c == '\"') {
-                std::string fieldName;
-                std::getline(is, fieldName, '\"');
-
-                if (fieldName == key) {
-                    is.get(); // consume the ':'
-                    is.get(); // consume the '['
-                    
-                    while (is.good() && is.peek() != ']') {
-                        int i;
-                        is >> i;
-                        value.push_back(i);
-
-                        if (is.peek() == ',') {
-                            is.get(); // consume the ','
-                        }
-                    }
-                    
-                    is.get(); // consume the ']'
-                    break;
-                }
+            
+            if (c == ']') {
+                break;
+            }
+            else if (c == ',') {
+                continue;
+            }
+            else {
+                is.unget();
+                T t;
+                is >> t;
+                value.push_back(t);
             }
         }
-    }
-
-    auto str() {
-        return is.rdbuf();
+        
+        return *this;
     }
 };
 
@@ -126,30 +85,85 @@ struct json_istream
 struct json_reader_t
 {
     json_istream& in;
-    
+
     /* visitor for the bool type **/
     void visit(const std::string& key, bool& value) {
-        in.readBoolean(key, value);
+        while (in.is.good()) {
+            char c = in.is.get();
+
+            if (c == '\"') {
+                std::string fieldName;
+                std::getline(in.is, fieldName, '\"');
+
+                if (fieldName == key) {
+                    in.is.get(); // consume the ':'
+                    in >> value;
+                    break;
+                }
+            }
+        }
     }
     
     /* visitor for the int type **/
     void visit(const std::string& key, int& value) {
-        in.readNumber(key, value);
+        double d;
+        visit(key, d);
+        value = static_cast<int>(d);
     }
     
     /* visitor for the double type **/
     void visit(const std::string& key, double& value) {
-        in.readDouble(key, value);
+        while (in.is.good()) {
+            char c = in.is.get();
+
+            if (c == '\"') {
+                std::string fieldName;
+                std::getline(in.is, fieldName, '\"');
+
+                if (fieldName == key) {
+                    in.is.get(); // consume the ':'
+                    in.is >> value;
+                    break;
+                }
+            }
+        }
     }
     
     /* visitor for the string type **/
     void visit(const std::string& key, std::string& value) {
-        in.readString(key, value);
+        while (in.is.good()) {
+            char c = in.is.get();
+
+            if (c == '\"') {
+                std::string fieldName;
+                std::getline(in.is, fieldName, '\"');
+
+                if (fieldName == key) {
+                    in.is.get(); // consume the ':'
+                    in >> value;
+                    break;
+                }
+            }
+        }
     }
     
-    /* visitor for the vector<int> type **/
-    void visit(const std::string& key, std::vector<int>& value) {
-        in.readContainer(key, value);
+    /* visitor for vector types **/
+    template <typename T>
+    void visit(const std::string& key, std::vector<T>& value) {
+        while (in.is.good()) {
+            char c = in.is.get();
+
+            if (c == '\"') {
+                std::string fieldName;
+                std::getline(in.is, fieldName, '\"');
+
+                if (fieldName == key) {
+                    in.is.get(); // consume the ':'
+                    in >> value;
+                    break;
+                }
+            }
+        }
     }
 };
 
