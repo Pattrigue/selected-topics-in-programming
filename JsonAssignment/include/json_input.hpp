@@ -6,15 +6,11 @@
 #include <vector>
 #include "meta.hpp"
 
-/** TODO: implement json_istream adapter with json input operations
- * The goal is to exercise meta-programming and not have complete JSON (Unicode support is beyond the scope).
- * Parsing should follow the type structure rather than the content of the input stream.
- * Visitor parsing may depend on the order of fields, which is OK for this exercise.
- */
- 
+/* forward declaration of the json_reader_t type */
 struct json_reader_t;
 
 
+/* helper type trait to check if a type has a member function accept() */
 template<typename T, typename = void>
 struct has_accept : std::false_type {};
 
@@ -24,7 +20,7 @@ struct has_accept<T, std::void_t<decltype(std::declval<T>().accept(std::declval<
 template<typename T>
 inline constexpr bool has_accept_v = has_accept<T>::value;
 
-
+/* struct to wrap an std::istream and override the >> operator for JSON types */
 struct json_istream
 {
     std::istream& is;
@@ -81,7 +77,7 @@ struct json_istream
 };
 
 
-/** Visitor pattern support for reading JSON */
+/** visitor pattern support for reading JSON */
 struct json_reader_t
 {
     json_istream& in;
@@ -181,6 +177,7 @@ struct json_reader_t
 };
 
 
+/* helper function to read a JSON object from an input stream */
 template <typename T>
 json_istream& operator>>(json_istream& j, T& value)
 {
@@ -206,7 +203,7 @@ json_istream& operator>>(json_istream& j, T& value)
 }
 
 
-/** Helper for rvalue reference */
+/** helper for rvalue reference */
 template <typename T>
 json_istream& operator>>(json_istream&& j, T& value)
 {
