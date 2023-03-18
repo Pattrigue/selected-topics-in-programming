@@ -60,16 +60,6 @@ TEST_CASE("JSON input")
         CHECK(is);
         CHECK(v == std::vector{3, 7, 11});
     }
-    // custom test I added that works fine
-    SUBCASE("vector")
-    {
-        auto is = std::istringstream{"[3,7,11]"};
-        auto v = std::vector<int>{};
-        json_istream{is} >> v;
-        CHECK(is);
-        CHECK(v == std::vector{3, 7, 11});
-    }
-    // but this one fails?
     SUBCASE("aggregate")
     {
         auto is = std::istringstream{R"({"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]})"};
