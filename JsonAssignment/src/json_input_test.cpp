@@ -60,6 +60,7 @@ TEST_CASE("JSON input")
         CHECK(is);
         CHECK(v == std::vector{3, 7, 11});
     }
+    static_assert(!accepts_v<int, double>, "int should not accept double");
     SUBCASE("aggregate")
     {
         auto is = std::istringstream{R"({"b":true,"x":3,"y":3.14,"z":"hello","w":[7,11]})"};
