@@ -96,7 +96,7 @@ struct json_writer_t
         bool was_first = isFirst;
 
         isFirst = true;
-        
+
         out.open();
         value.accept(*this);
         out.close();
@@ -107,7 +107,7 @@ struct json_writer_t
     
     /** write JSON null */
     void visit(const std::string& key, std::nullptr_t) {
-         out << write_key(key) << ":null";
+        out << write_key(key) << ":null";
     }
 
     /** write JSON boolean */
@@ -162,15 +162,11 @@ struct json_writer_t
 
 
 template <typename T>
-json_writer_t& operator<<(json_writer_t& j, const T& value)
-{
-    j.visit("", value);
-    return j;
-}
+json_writer_t& operator<<(json_writer_t& j, const T& value) {
+    return json_writer_t{j}.visit("", value), j;}
 
 template <typename T>
-json_writer_t& operator<<(json_writer_t&& j, const T& value)
-{
+json_writer_t& operator<<(json_writer_t&& j, const T& value) {
     return j << value;
 }
 

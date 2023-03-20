@@ -6,19 +6,6 @@
 #include <vector>
 #include "meta.hpp"
 
-/* forward declaration of the json_reader_t type */
-struct json_reader_t;
-
-
-/* helper type trait to check if a type has a member function accept() */
-template<typename T, typename = void>
-struct has_accept : std::false_type {};
-
-template<typename T>
-struct has_accept<T, std::void_t<decltype(std::declval<T>().accept(std::declval<json_reader_t&>()))>> : std::true_type {};
-
-template<typename T>
-inline constexpr bool has_accept_v = has_accept<T>::value;
 
 /* struct to wrap an std::istream and override the >> operator for JSON types */
 struct json_istream
@@ -60,11 +47,9 @@ struct json_istream
             
             if (c == ']') {
                 break;
-            }
-            else if (c == ',') {
+            } else if (c == ',') {
                 continue;
-            }
-            else {
+            } else {
                 is.unget();
                 T t;
                 is >> t;
@@ -85,11 +70,10 @@ struct json_reader_t
     /* visitor for nested types **/
     template <typename Data>
     void visit(const std::string& name, Data& value) {
-        if constexpr (has_accept_v<Data>) {
+        if constexpr (has_accept_v<Data, json_reader_t>) {
             value.accept(*this);
         }
-        else {
-            in.is.get(); // consume the '{'
+        else { in.is.get(); // consume the '{'
             value.accept(*this);
             in.is.get(); // consume the '}'
         }
@@ -182,19 +166,9 @@ template <typename T>
 json_istream& operator>>(json_istream& j, T& value)
 {
     json_reader_t reader{j};
-
-    if constexpr (std::is_same_v<T, bool>) {
-        reader.visit("", value); // call bool visitor
-    } else if constexpr (std::is_same_v<T, int>) {
-        reader.visit("", value); // call int visitor
-    } else if constexpr (std::is_same_v<T, double>) {
-        reader.visit("", value); // call double visitor
-    } else if constexpr (std::is_same_v<T, std::string>) {
-        reader.visit("", value); // call string visitor
-    } else if constexpr (std::is_same_v<T, std::vector<int>>) {
-        reader.visit("", value); // call vector<int> visitor
-    } else if constexpr (has_accept_v<T>) {
-        value.accept(reader); // call visitor for custom type T (if it has accept() method)
+    
+    if constexpr (has_accept_v<T, json_reader_t>) {
+        value.accept(reader);
     } else {
         throw std::runtime_error("Unsupported type.");
     }

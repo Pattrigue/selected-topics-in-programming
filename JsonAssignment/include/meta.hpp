@@ -5,7 +5,7 @@
 #include <string>
 
 /**
- * TODO: implement meta-predicates
+ * implement meta-predicates
  * (template classes/variables taking type and returning bool)
  * is_bool_v
  * is_number_v
@@ -53,6 +53,9 @@ concept String = is_string_v<T>;
 
 
 template <typename T>
+constexpr bool is_primitive_v = is_bool_v<T> || is_number_v<T> || is_character_v<T> || is_string_v<T>;
+
+template <typename T>
 concept container = requires(T t) {
     std::begin(t);
     std::end(t);
@@ -69,6 +72,16 @@ template <typename Data, typename Visitor>
 constexpr auto accepts_v = requires(Data data, Visitor visitor) {
     data.accept(visitor);
 };
+
+/* helper type trait to check if a type has a member function accept() */
+template <typename T, typename Arg, typename = void>
+struct has_accept : std::false_type {};
+
+template <typename T, typename Arg>
+struct has_accept<T, Arg, std::void_t<decltype(std::declval<T>().accept(std::declval<Arg>()))>> : std::true_type {};
+
+template<typename T, typename Arg>
+inline constexpr bool has_accept_v = has_accept<T, Arg>::value;
 
 
 #endif  // STATIC_VISITOR_META_HPP
