@@ -163,8 +163,7 @@ struct json_reader_t
 
 /* helper function to read a JSON object from an input stream */
 template <typename T>
-json_istream& operator>>(json_istream& j, T& value)
-{
+json_istream& operator>>(json_istream& j, T& value) {
     json_reader_t reader{j};
     
     if constexpr (has_accept_v<T, json_reader_t>) {
@@ -179,8 +178,7 @@ json_istream& operator>>(json_istream& j, T& value)
 
 /** helper for rvalue reference */
 template <typename T>
-json_istream& operator>>(json_istream&& j, T& value)
-{
+json_istream& operator>>(json_istream&& j, T& value) {
     return j >> value;
 }
 
