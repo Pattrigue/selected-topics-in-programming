@@ -53,9 +53,6 @@ concept String = is_string_v<T>;
 
 
 template <typename T>
-constexpr bool is_primitive_v = is_bool_v<T> || is_number_v<T> || is_character_v<T> || is_string_v<T>;
-
-template <typename T>
 concept container = requires(T t) {
     std::begin(t);
     std::end(t);
