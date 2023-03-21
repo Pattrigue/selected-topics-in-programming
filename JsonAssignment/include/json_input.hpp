@@ -20,8 +20,7 @@ struct json_istream
     
     /* override the >> operator for string values **/
     json_istream& operator>>(std::string& value) {
-        is.get(); // consume the '"'
-        std::getline(is, value, '"');
+        is >> std::quoted(value);
         return *this;
     }
     
