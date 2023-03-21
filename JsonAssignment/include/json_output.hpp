@@ -6,6 +6,7 @@
 #include <sstream>
 #include <unordered_set>
 #include <vector>
+#include <iomanip>
 #include "meta.hpp"
 
 
@@ -31,7 +32,6 @@ struct json_ostream
     
     json_ostream& operator<<(const double& value) {
         os << value;
-        return *this;
     }
     
     /** overload the << operator for char values */
@@ -57,7 +57,7 @@ struct json_ostream
         if (special_chars.find(value) != special_chars.end()) {
             os << value;
         } else {
-            os << '"' << value << '"';
+            os << std::quoted(value);
         }
 
         return *this;
@@ -92,21 +92,20 @@ struct json_writer_t
     bool isFirst = true;
     
     /** Helper function to write keys so that commas are added between fields, but not before the isFirst one */
-    std::string write_key(const std::string& key) {
+    json_ostream& write_key(const std::string& key) {
         if (!isFirst) {
             out.os << ',';
         }
 
         isFirst = false;
-        
-        return key;
+        return out << key;
     }
 
     /** the main driver method for writing JSON */
     template <typename Data>
     void visit(const std::string& key, const Data& value) {
         if (!key.empty()) {
-            out << write_key(key) << ":";
+            write_key(key) << ":";
         }
         
         /** save the isFirst flag to handle nested objects */
@@ -124,46 +123,31 @@ struct json_writer_t
     
     /** write JSON null */
     void visit(const std::string& key, std::nullptr_t) {
-        out << write_key(key) << ":null";
+        write_key(key) << ":null";
     }
 
     /** write JSON boolean */
     template <Boolean B>
     void visit(const std::string& key, const B& value) {
-        out << write_key(key) << ":" << value;
+        write_key(key) << ":" << value;
     }
 
     /** write JSON number */
     template <Number N>
     void visit(const std::string& key, const N& value) {
-        out << write_key(key) << ":" << value;
+        write_key(key) << ":" << value;
     }
 
     /** write JSON string */
     template <String S>
     void visit(const std::string& key, const S& value) {
-        out << write_key(key) << ":" << '"';
-        
-        for (char c : value) {
-            switch (c) {
-                case '\"': out << "\\\""; break;
-                case '\\': out << "\\\\"; break;
-                case '\b': out << "\\b"; break;
-                case '\f': out << "\\f"; break;
-                case '\n': out << "\\n"; break;
-                case '\r': out << "\\r"; break;
-                case '\t': out << "\\t"; break;
-                default: out << c; break;
-            }
-        }
-        
-        out << '"';
+        write_key(key) << ":" << value;
     }
 
     /** write JSON container */
     template <Container T>
     void visit(const std::string& key, const T& value) {
-        out << write_key(key) << ":" << value;
+        write_key(key) << ":" << value;
     }
 };
 
