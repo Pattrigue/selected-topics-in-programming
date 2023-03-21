@@ -56,7 +56,7 @@ template <typename T>
 concept container = requires(T t) {
     std::begin(t);
     std::end(t);
-} && !std::is_same_v<std::remove_cvref_t<T>, std::string>;
+} && !is_string_v<T>;
 
 template <typename T>
 constexpr auto is_container_v = (container<T> || std::is_array_v<std::remove_cvref_t<T>>) && !is_string_v<T>;

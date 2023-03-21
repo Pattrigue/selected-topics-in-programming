@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <unordered_set>
+#include <vector>
 #include "meta.hpp"
 
 
@@ -17,26 +18,45 @@ struct json_ostream
     void close() { os << '}'; }
     
     /** overload the << operator for boolean values */
-    template <Boolean B>
-    json_ostream& operator<<(const B& value) {
+    json_ostream& operator<<(const bool& value) {
         os << (value ? "true" : "false");
         return *this;
     }
 
     /** overload the << operator for number values */
-    template <Number N>
-    json_ostream& operator<<(const N& value) {
+    json_ostream& operator<<(const int& value) {
+        os << value;
+        return *this;
+    }
+    
+    json_ostream& operator<<(const double& value) {
+        os << value;
+        return *this;
+    }
+    
+    /** overload the << operator for char values */
+    json_ostream& operator<<(const char& value) {
         os << value;
         return *this;
     }
 
     /** overload the << operator for string values */
-    template <String T>
-    json_ostream& operator<<(const T& value) {
-        static const std::unordered_set<std::string> special_chars = { 
+    json_ostream& operator<<(const char* value) {
+        std::cout << "char*, " << value << std::endl;
+        return operator<<(std::string_view{value});
+    }
+    
+    json_ostream& operator<<(const std::string& value) {
+        std::cout << "std::string, " << value << std::endl;
+        return operator<<(std::string_view{value});
+    }
+    
+    json_ostream& operator<<(const std::string_view & value) {
+        std::cout << "std::string_view, " << value << std::endl;
+        static const std::unordered_set<std::string_view> special_chars = { 
             ":", ",", "{", "}", "[", "]", "true", "false", "null" 
         };
-
+        
         if (special_chars.find(value) != special_chars.end()) {
             os << value;
         } else {
@@ -146,28 +166,20 @@ struct json_writer_t
     /** write JSON container */
     template <Container T>
     void visit(const std::string& key, const T& value) {
-        out << write_key(key) << ':' << '[';
-        
-        for (const auto& item : value) {
-            if (&item != &value.front()) {
-                out << ',';
-            }
-            
-            out << item;
-        }
-        
-        out << ']';
+        out << write_key(key) << ":" << value;
     }
 };
 
 
 template <typename T>
-json_writer_t& operator<<(json_writer_t& j, const T& value) {
-    return json_writer_t{j}.visit("", value), j;
+json_ostream& operator<<(json_ostream& j, const T& value) {
+    json_writer_t writer(j);
+    writer.visit("", value);
+    return j;
 }
 
 template <typename T>
-json_writer_t& operator<<(json_writer_t&& j, const T& value) {
+json_ostream& operator<<(json_ostream&& j, const T& value) {
     return j << value;
 }
 
