@@ -73,7 +73,8 @@ struct json_reader_t
         if constexpr (has_accept_v<Data, json_reader_t>) {
             value.accept(*this);
         }
-        else { in.is.get(); // consume the '{'
+        else {
+            in.is.get(); // consume the '{'
             value.accept(*this);
             in.is.get(); // consume the '}'
         }
