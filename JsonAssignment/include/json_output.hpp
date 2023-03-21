@@ -32,6 +32,7 @@ struct json_ostream
     
     json_ostream& operator<<(const double& value) {
         os << value;
+        return *this;
     }
     
     /** overload the << operator for char values */
