@@ -42,17 +42,14 @@ struct json_ostream
 
     /** overload the << operator for string values */
     json_ostream& operator<<(const char* value) {
-        std::cout << "char*, " << value << std::endl;
         return operator<<(std::string_view{value});
     }
     
     json_ostream& operator<<(const std::string& value) {
-        std::cout << "std::string, " << value << std::endl;
         return operator<<(std::string_view{value});
     }
     
     json_ostream& operator<<(const std::string_view & value) {
-        std::cout << "std::string_view, " << value << std::endl;
         static const std::unordered_set<std::string_view> special_chars = { 
             ":", ",", "{", "}", "[", "]", "true", "false", "null" 
         };
