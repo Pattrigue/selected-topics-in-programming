@@ -56,9 +56,25 @@ struct json_ostream
         };
         
         if (special_chars.find(value) != special_chars.end()) {
+            // if the string is a special character, then we don't need to quote it
             os << value;
         } else {
-            os << std::quoted(value);
+            os << '"';
+        
+            for (char c : value) {
+                switch (c) {
+                    case '\"': os << "\\\""; break;
+                    case '\\': os << "\\\\"; break;
+                    case '\b': os << "\\b"; break;
+                    case '\f': os << "\\f"; break;
+                    case '\n': os << "\\n"; break;
+                    case '\r': os << "\\r"; break;
+                    case '\t': os << "\\t"; break;
+                    default: os << c; break;
+                }
+            }
+        
+            os << '"';
         }
 
         return *this;
