@@ -163,7 +163,8 @@ struct json_writer_t
 
 template <typename T>
 json_writer_t& operator<<(json_writer_t& j, const T& value) {
-    return json_writer_t{j}.visit("", value), j;}
+    return json_writer_t{j}.visit("", value), j;
+}
 
 template <typename T>
 json_writer_t& operator<<(json_writer_t&& j, const T& value) {
