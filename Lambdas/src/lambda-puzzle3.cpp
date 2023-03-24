@@ -23,9 +23,10 @@ void fill_with_data(std::vector<int>& data, size_t count)
 //		data.push_back(dist(gen));
 }
 
-void print_data(std::ostream& os, const std::vector<int>& data)
+template <typename T>
+void print_data(std::ostream& os, const std::vector<T>& data)
 {
-    std::copy(data.begin(), data.end(), std::ostream_iterator<int>(os, " "));
+    std::copy(data.begin(), data.end(), std::ostream_iterator<T>(os, " "));
     
 //    for (auto&& d: data)
 //		os << d << ' ';
@@ -112,6 +113,7 @@ TEST_CASE("Lambda puzzle3")
     fill_with_data(data, 20);
     
     CHECK(data.size() == 20);
+
     
     SUBCASE("print_data")
     {
@@ -183,16 +185,17 @@ TEST_CASE("Lambda puzzle3")
         auto sorted_str = compute_sorted(data_str);
         auto std_sorted_str = data_str;
         std::sort(std_sorted_str.begin(), std_sorted_str.end());
+        
+        // make sure we can call print_data with any vector type
+        print_data(std::cout, sorted_str);
 
         CHECK(sorted_str == std_sorted_str);
     }
     
-    // TODO: make print_data a function template, so that the following is accepted:
-    //print_data(std::cout, sorted_str);
     SUBCASE("squares") {
         std::cout << "squares: ";
         print_data(std::cout, squares(data));
-
+        
         auto squared_data = std::vector<int>{};
 
         for (auto i : data)
