@@ -42,7 +42,7 @@ void consume(mtqueue<int>& q) {
 
 int main() {
     mtqueue<int> q;
-    thread_pool pool(4);
+    thread_pool pool{4};
     
     // Spawn multiple threads for producer and consumer using the thread pool
     for (int i = 0; i < 10; ++i) {
