@@ -35,5 +35,8 @@ endif()
 add_executable(mtqueue mtqueue.cpp)
 target_link_libraries(mtqueue PRIVATE Threads::Threads)
 
+add_executable(mtqueue_threadpool mtqueue_threadpool.cpp)
+target_link_libraries(mtqueue_threadpool PRIVATE Threads::Threads)
+
 add_executable(futures futures.cpp)
 target_link_libraries(futures PRIVATE Threads::Threads)

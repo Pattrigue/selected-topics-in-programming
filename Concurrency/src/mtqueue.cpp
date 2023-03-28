@@ -4,16 +4,20 @@
 #include "mtqueue.hpp"
 
 std::atomic<bool> done = false;
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_int_distribution<> sleep_dist(0, 500);
+
 
 void produce(mtqueue<int>& q) {
 	// Producer routine: put random numbers into queue
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_int_distribution<> values_dist(0, 100);
-    std::uniform_int_distribution<> sleep_dist(0, 500);
     
     while (!done) {
-        q.put(values_dist(gen));
+        int value = values_dist(gen);
+        q.put(value);
+        
+        std::cout << "Produced " << value << "." << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep_dist(gen)));
     }
 }
@@ -28,6 +32,7 @@ void consume(mtqueue<int>& q) {
         }
         
         std::cout << "Consumed " << item.value() << "." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleep_dist(gen)));
     }
 }
 
