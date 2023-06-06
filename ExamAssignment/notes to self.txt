@@ -1,7 +1,0 @@
-is reaction.name() ever used? if not, remove it and replace the function with the << operator overload.
-- Yes! It is used in the symbol table.
-
-remember to include the mean and peak values in the report!
-
-write the conclusion on the benchmarks
-
