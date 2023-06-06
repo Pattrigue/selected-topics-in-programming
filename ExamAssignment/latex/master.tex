@@ -1,0 +1,65 @@
+\documentclass[a4paper]{article}
+
+\usepackage[a4paper, total={18cm, 26cm}]{geometry}
+\usepackage[T1]{fontenc} % needed by beramono
+\usepackage{textcomp}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float}
+% beramono.sty and MnSymbol.sty come with texlive-fonts-extra in Debian
+\usepackage[scaled=0.85]{beramono} % tt font supporting slshape and zero with dot
+\usepackage{MnSymbol} % fancy symbols for line-breaks
+\usepackage[utf8]{inputenc}
+\usepackage{listingsutf8}  % code listings, comes with texlive-latex-recommended
+%\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{graphicx} % \includegraphics[width=\textwidth]{image.png}
+
+\title{Stochastic Simulation Library}
+\author{Patrick Frostholm Østergaard\\Student No.: 20195087 \\ \url{pfas19@student.aau.dk}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+This report documents my implementation of the Stochastic Simulation Library for the Selected Topics in Programming course exam at AAU 2023.
+
+The source code for the project can also be found in my \href{https://github.com/Pattrigue/selected-topics-in-programming}{\color{blue}GitHub repository} for the course.
+
+\section{Project Files}
+\input{listing.tex}
+
+\section{Figures}
+\input{figures.tex}
+
+\section{Conclusions}
+This section contains the results and conclusions of estimating the number of infected people in Denmark and North Jutland, as well as the benchmarks for running the simulations in parallel and sequentially.
+
+\subsection{Estimations}
+The following table shows the estimations for the number of infected people in Denmark (DK) as well as North Jutland (NJ) specifically.
+These estimations were calculated by running the \texttt{main} function in Listing \ref{lst:EstimationsMain.cpp}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+& \textbf{Mean Hospitalized} & \textbf{Peak Hospitalized} \\
+\hline
+DK & 1193 & 1268 \\
+NJ & 128 & 161 \\
+\hline
+\end{tabular}
+\caption{Hospitalization estimations.}
+\label{tab:hospitalization_estimations}
+\end{table}
+
+\subsection{Benchmarks}
+The benchmarks clearly indicate that running multiple simulations in parallel is faster than running them sequentially.
+This is to be expected, as the simulations are independent of each other, and can therefore be run in parallel without any issues.
+In other words, there are no data dependencies between the simulations, and therefore no need to wait for one simulation to finish before starting the next one.
+
+As is also expected, running the simulations on a 16 core machine and letting the OS schedule the threads is about the same as running the simulations in a thread pool with 16 threads.
+According to my results, at least, the difference is negligible.
+
+
+\end{document}
