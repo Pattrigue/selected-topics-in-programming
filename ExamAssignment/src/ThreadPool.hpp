@@ -52,6 +52,9 @@ namespace StochSimLib {
             }
         }
 
+        ThreadPool(const ThreadPool&) = delete;
+        ThreadPool& operator=(const ThreadPool&) = delete;
+        
         /** Destructor. Stops all worker threads and waits for them to finish. */
         ~ThreadPool() {
             {

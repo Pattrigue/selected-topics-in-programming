@@ -46,8 +46,10 @@ namespace StochSimLib {
         
         // Convenience operator for subscripting the symbol table
         std::shared_ptr<T> operator[](const std::string &symbol) {
-            if (tryGet(symbol)) {
-                return *tryGet(symbol);
+            auto opt = tryGet(symbol);
+            
+            if (opt.has_value()) {
+                return opt.value();
             } else {
                 throw std::runtime_error("Symbol\"" + symbol + "\"not found in symbol table!");
             }

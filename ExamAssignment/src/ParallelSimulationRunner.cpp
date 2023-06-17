@@ -48,9 +48,6 @@ namespace StochSimLib {
                 });
             }
         }
-        
-        std::cout << "Done." << std::endl;
-        
     }
     
     const std::vector<Simulation> &ParallelSimulationRunner::getSimulations() const {

@@ -50,7 +50,7 @@ namespace StochSimLib {
 
         reaction.addProduct(species);
 
-        return std::move(reaction);
+        return reaction;
     }
 
     Reaction operator>>=(const std::shared_ptr<Species> &species, ReactionCompounds &&compounds) {
@@ -61,7 +61,7 @@ namespace StochSimLib {
             reaction.addProduct(s);
         }
 
-        return std::move(reaction);
+        return reaction;
     }
 
     Reaction operator>>=(const ReactionCompounds &compoundsL, const ReactionCompounds &compoundsR) {
