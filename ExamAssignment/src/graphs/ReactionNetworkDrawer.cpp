@@ -27,7 +27,7 @@ namespace StochSimLib::Graphs {
         if (source == "env" || destination == "env") {
             return;
         }
-
+        
         agedge(g, agnode(g, (char *) source.c_str(), 1), agnode(g, (char *) destination.c_str(), 1), nullptr, 1);
     }
 
@@ -54,14 +54,14 @@ namespace StochSimLib::Graphs {
             
             createNode(g, rateNodeName, "lightblue", "box");
             agset(agnode(g, (char *) rateNodeName.c_str(), 1), (char*)"label", (char*)rateStr.c_str());
-
+            
             // Draw edges between every species in the reaction as well as the rate node
-            for (const auto &x: reaction->reactants()) {
-                createEdge(g, x->name(), rateNodeName);
+            for (auto &x: reaction->reactants()) {
+                createEdge(g, x.get().name(), rateNodeName);
             }
 
             for (const auto &x: reaction->products()) {
-                createEdge(g, rateNodeName, x->name());
+                createEdge(g, rateNodeName, x.get().name());
             }
         }
 

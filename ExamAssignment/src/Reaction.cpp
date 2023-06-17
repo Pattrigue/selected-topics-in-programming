@@ -18,11 +18,11 @@ namespace StochSimLib {
         return ss.str();
     }
 
-    void Reaction::addReactant(const std::shared_ptr<Species> &reactant) {
+    void Reaction::addReactant(const Species &reactant) {
         m_reactants.addSpecies(reactant);
     }
 
-    void Reaction::addProduct(const std::shared_ptr<Species> &product) {
+    void Reaction::addProduct(const Species &product) {
         m_products.addSpecies(product);
     }
 
@@ -30,7 +30,7 @@ namespace StochSimLib {
         double lambdaK = rate;
 
         for (const auto &species : reactants()) {
-            lambdaK *= static_cast<double>(species->quantity());
+            lambdaK *= static_cast<double>(species.get().quantity());
         }
 
         std::exponential_distribution<double> distribution(lambdaK);
@@ -41,7 +41,7 @@ namespace StochSimLib {
         return os << reaction.name();
     }
 
-    Reaction operator>>=(ReactionCompounds &&compounds, const std::shared_ptr<Species> &species) {
+    Reaction operator>>=(ReactionCompounds &&compounds, const Species &species) {
         Reaction reaction;
 
         for (const auto &s: compounds.species()) {
@@ -53,7 +53,7 @@ namespace StochSimLib {
         return reaction;
     }
 
-    Reaction operator>>=(const std::shared_ptr<Species> &species, ReactionCompounds &&compounds) {
+    Reaction operator>>=(const Species &species, ReactionCompounds &&compounds) {
         Reaction reaction;
         reaction.addReactant(species);
 
@@ -78,7 +78,7 @@ namespace StochSimLib {
         return reaction;
     }
 
-    Reaction operator>>=(const std::shared_ptr<Species> &speciesL, const std::shared_ptr<Species> &speciesR) {
+    Reaction operator>>=(const Species &speciesL, const Species &speciesR) {
         Reaction reaction;
         reaction.addReactant(speciesL);
         reaction.addProduct(speciesR);

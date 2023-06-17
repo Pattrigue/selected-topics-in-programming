@@ -13,10 +13,10 @@ using namespace StochSimLib;
 
 TEST_CASE("Test pretty printing") {
     Reaction reaction;
-    reaction.addReactant(std::make_shared<Species>("A", 1));
-    reaction.addReactant(std::make_shared<Species>("C", 1));
-    reaction.addProduct(std::make_shared<Species>("B", 0));
-    reaction.addProduct(std::make_shared<Species>("C", 0));
+    reaction.addReactant(Species("A", 1));
+    reaction.addReactant(Species("C", 1));
+    reaction.addProduct(Species("B", 0));
+    reaction.addProduct(Species("C", 0));
     
     reaction.rate = 50.0;
     

@@ -18,9 +18,9 @@ TEST_SUITE("SymbolTable Test Suite") {
         table.add("b", 2);
         table.add("c", 3);
 
-        CHECK(*table["a"] == 1);
-        CHECK(*table["b"] == 2);
-        CHECK(*table["c"] == 3);
+        CHECK(table["a"] == 1);
+        CHECK(table["b"] == 2);
+        CHECK(table["c"] == 3);
     }
 
     TEST_CASE("SymbolTable - Modifying") {
@@ -30,13 +30,13 @@ TEST_SUITE("SymbolTable Test Suite") {
         table.add("b", 2);
         table.add("c", 3);
 
-        *table["a"] = 4;
-        *table["b"] = 5;
-        *table["c"] = 6;
+        table["a"] = 4;
+        table["b"] = 5;
+        table["c"] = 6;
 
-        CHECK(*table["a"] == 4);
-        CHECK(*table["b"] == 5);
-        CHECK(*table["c"] == 6);
+        CHECK(table["a"] == 4);
+        CHECK(table["b"] == 5);
+        CHECK(table["c"] == 6);
     }
 
     TEST_CASE("SymbolTable - Removing") {
@@ -92,13 +92,18 @@ TEST_SUITE("SymbolTable Test Suite") {
     }
 
     TEST_CASE("SymbolTable - Add and Retrieve Shared Ptr") {
-        SymbolTable<int> table;
-        std::shared_ptr<int> ptr = std::make_shared<int>(1);
-
-        table.add("a", ptr);
+        SymbolTable<std::shared_ptr<int>> table;
         
-        CHECK(*table["a"] == 1);
-        CHECK(table["a"] == ptr);
+        auto ptr = std::make_shared<int>(1);
+        auto ptr_copy = ptr; // copy of the shared_ptr for comparison
+
+        table.add("a", std::move(ptr));
+
+        // Compare the values that the shared_ptrs point to
+        CHECK(*(table["a"]) == *ptr_copy);
+
+        // Compare the shared_ptrs directly (the addresses they hold, not the integers)
+        CHECK(table["a"] == ptr_copy);
     }
 
     TEST_CASE("SymbolTable - Iteration") {

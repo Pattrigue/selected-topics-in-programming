@@ -24,9 +24,9 @@ namespace StochSimLib {
          * This fulfills part of requirement 2: "Pretty-print the reaction network in a human readable format". */
         [[nodiscard]] std::string name() const;
 
-        void addReactant(const std::shared_ptr<Species> &reactant);
+        void addReactant(const Species &reactant);
 
-        void addProduct(const std::shared_ptr<Species> &product);
+        void addProduct(const Species &product);
         
         /** Computes the delay of the reaction using equation 1 from the PDF. 
          * This fulfills part of requirement 4: 
@@ -39,12 +39,12 @@ namespace StochSimLib {
     /* Models a reaction where multiple reactants (compounds) form a single product (species). E.g., A + B -> C.
      * This fulfills part of requirement 1: 
      * "Use operator overloading to support the reaction rule typesetting directly in C++ code." */
-    Reaction operator>>=(ReactionCompounds &&compounds, const std::shared_ptr<Species> &species);
+    Reaction operator>>=(ReactionCompounds &&compounds, const Species &species);
 
     /* Models a reaction where a single reactant (species) forms multiple products (compounds). E.g., A -> B + C.
      * This fulfills part of requirement 1:
      * "Use operator overloading to support the reaction rule typesetting directly in C++ code." */
-    Reaction operator>>=(const std::shared_ptr<Species> &species, ReactionCompounds &&compounds);
+    Reaction operator>>=(const Species &species, ReactionCompounds &&compounds);
 
     /* Models a reaction where multiple reactants (compounds) form multiple products (compounds). E.g., A + B -> C + D.
      * This fulfills part of requirement 1:
@@ -54,7 +54,7 @@ namespace StochSimLib {
     /* Models a unary reaction where 's1' transforms into 's2'. E.g., A -> B.
      * This fulfills part of requirement 1:
      * "Use operator overloading to support the reaction rule typesetting directly in C++ code." */
-    Reaction operator>>=(const std::shared_ptr<Species> &speciesL, const std::shared_ptr<Species> &speciesR);
+    Reaction operator>>=(const Species &speciesL, const Species &speciesR);
     
 }
 

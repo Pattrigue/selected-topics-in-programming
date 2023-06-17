@@ -26,17 +26,17 @@ namespace StochSimLib::Networks {
 
         Simulation simulation{};
 
-        auto env = simulation.environment();
+        auto& env = simulation.environment();
 
-        auto DA = simulation.addSpecies("DA", 1);
-        auto D_A = simulation.addSpecies("D_A", 0);
-        auto DR = simulation.addSpecies("DR", 1);
-        auto D_R = simulation.addSpecies("D_R", 0);
-        auto MA = simulation.addSpecies("MA", 0);
-        auto MR = simulation.addSpecies("MR", 0);
-        auto A = simulation.addSpecies("A", 0);
-        auto R = simulation.addSpecies("R", 0);
-        auto C = simulation.addSpecies("C", 0);
+        auto& DA = simulation.addSpecies("DA", 1);
+        auto& D_A = simulation.addSpecies("D_A", 0);
+        auto& DR = simulation.addSpecies("DR", 1);
+        auto& D_R = simulation.addSpecies("D_R", 0);
+        auto& MA = simulation.addSpecies("MA", 0);
+        auto& MR = simulation.addSpecies("MR", 0);
+        auto& A = simulation.addSpecies("A", 0);
+        auto& R = simulation.addSpecies("R", 0);
+        auto& C = simulation.addSpecies("C", 0);
 
         simulation.addReaction(A + DA >>= D_A, gammaA);
         simulation.addReaction(D_A >>= DA + A, thetaA);

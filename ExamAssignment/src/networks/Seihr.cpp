@@ -22,11 +22,11 @@ namespace StochSimLib::Networks {
         const auto kappa = gamma * P_H * (1.0 - P_H); // hospitalization rate (I -> H)
         const auto tau = 1.0 / 10.12; // recovery/death rate in hospital (H -> R) ~10.12 days
 
-        auto S = simulation.addSpecies("S", S0); // susceptible
-        auto E = simulation.addSpecies("E", E0); // exposed
-        auto I = simulation.addSpecies("I", I0); // infectious
-        auto H = simulation.addSpecies("H", 0); // hospitalized
-        auto R = simulation.addSpecies("R", 0); // removed/immune (recovered + dead)
+        auto& S = simulation.addSpecies("S", S0); // susceptible
+        auto& E = simulation.addSpecies("E", E0); // exposed
+        auto& I = simulation.addSpecies("I", I0); // infectious
+        auto& H = simulation.addSpecies("H", 0); // hospitalized
+        auto& R = simulation.addSpecies("R", 0); // removed/immune (recovered + dead)
 
         simulation.addReaction(S + I >>= E + I, beta / N); // susceptible becomes exposed through infectious
         simulation.addReaction(E >>= I, alpha); // exposed becomes infectious

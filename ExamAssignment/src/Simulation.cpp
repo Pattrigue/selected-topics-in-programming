@@ -7,23 +7,25 @@ namespace StochSimLib {
                 reaction.reactants().begin(),
                 reaction.reactants().end(),
                 [](const auto &reactant) {
-                    return reactant->quantity() > 0;
+                    return reactant.get().quantity() > 0;
                 }
         );
     }
     
     void Simulation::react(Reaction &reaction) {
         for (auto &reactant : reaction.reactants()) {
-            reactant->decreaseQuantity(1);
+            Species species = reactant.get();
+            species.decreaseQuantity(1);
         }
 
         for (auto &product : reaction.products()) {
-            product->increaseQuantity(1);
+            Species species = product.get();
+            species.increaseQuantity(1);
         }
     }
     
     Reaction &Simulation::getReactionWithMinDelay() {
-        auto reactionMinDelayIter = std::min_element(m_reactions.begin(), m_reactions.end(),
+        auto reactionMinDelayIter = std::min_element(m_reactions->begin(), m_reactions->end(),
               [](const auto &a, const auto &b) {
                 return a.second->delay < b.second->delay;
             }
@@ -32,33 +34,31 @@ namespace StochSimLib {
         return *reactionMinDelayIter->second;
     }
     
-    std::shared_ptr<Species> Simulation::environment() const {
-        return env;
+    Species& Simulation::environment() const {
+        return *env;
     }
     
-    SymbolTable<Species> Simulation::species() const {
-        return m_species;
+    SymbolTable<Species>& Simulation::species() const {
+        return *m_species;
     }
 
-    SymbolTable<Reaction> Simulation::reactions() const {
-        return m_reactions;
+    SymbolTable<Reaction>& Simulation::reactions() const {
+        return *m_reactions;
     }
     
     double Simulation::time() const {
         return m_time;
     }
     
-    std::shared_ptr<Species> Simulation::addSpecies(const std::string &name, size_t quantity) {
-        std::shared_ptr<Species> species = std::make_shared<Species>(name, quantity);
-
-        m_species.add(species->name(), species);
-
-        return species;
+    Species& Simulation::addSpecies(const std::string &name, size_t quantity) {
+        Species species = Species{name, quantity};
+        
+        return m_species->add(name, std::move(species));
     }
 
     void Simulation::addReaction(Reaction &&reaction, double rate) {
         reaction.rate = rate;
-        m_reactions.add(reaction.name(), std::make_shared<Reaction>(reaction));
+        m_reactions->add(reaction.name(), std::move(reaction));
     }
     
     void Simulation::simulate(double endTime, std::optional<std::function<void(const Simulation &)>> callback) {
@@ -66,7 +66,7 @@ namespace StochSimLib {
         std::mt19937 generator(rd());
 
         while (m_time <= endTime) {
-            for (auto &[_, reaction] : m_reactions) {
+            for (auto &[_, reaction] : *m_reactions) {
                 reaction->computeDelay(generator);
             }
 
@@ -84,7 +84,7 @@ namespace StochSimLib {
     }
 
     std::ostream &operator<<(std::ostream &os, const Simulation &simulation) {
-        for (const auto &[_, reaction]: simulation.m_reactions) {
+        for (const auto &[_, reaction]: *simulation.m_reactions) {
             os << reaction;
             os << " (rate = " << reaction->rate << ")";
             os << std::endl;

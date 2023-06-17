@@ -12,9 +12,9 @@ namespace StochSimLib::Networks {
 
         Simulation simulation{};
 
-        auto A = simulation.addSpecies("A", countA);
-        auto B = simulation.addSpecies("B", countB);
-        auto C = simulation.addSpecies("C", countC);
+        auto& A = simulation.addSpecies("A", countA);
+        auto& B = simulation.addSpecies("B", countB);
+        auto& C = simulation.addSpecies("C", countC);
 
         simulation.addReaction(A + C >>= B + C, lambda);
 

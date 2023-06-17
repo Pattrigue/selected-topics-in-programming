@@ -12,9 +12,9 @@
 namespace StochSimLib {
     
     class Simulation {
-        std::shared_ptr<Species> env = std::make_shared<Species>("env", 0);
-        SymbolTable <Species> m_species;
-        SymbolTable <Reaction> m_reactions;
+        std::unique_ptr<Species> env = std::make_unique<Species>("env", 0);
+        std::unique_ptr<SymbolTable<Species>> m_species = std::make_unique<SymbolTable<Species>>();
+        std::unique_ptr<SymbolTable<Reaction>> m_reactions = std::make_unique<SymbolTable<Reaction>>();
         
         double m_time;
 
@@ -28,17 +28,17 @@ namespace StochSimLib {
         Reaction& getReactionWithMinDelay();
 
     public:
-        std::shared_ptr<Species> environment() const;
+        [[nodiscard]] Species& environment() const;
 
-        SymbolTable <Species> species() const;
+        [[nodiscard]] SymbolTable<Species>& species() const;
 
-        SymbolTable <Reaction> reactions() const;
+        [[nodiscard]] SymbolTable<Reaction>& reactions() const;
 
         /** The current time of the simulation. */
-        double time() const;
+        [[nodiscard]] double time() const;
         
         /** Creates a new species and adds it to the simulation. */
-        std::shared_ptr<Species> addSpecies(const std::string &name, size_t quantity);
+        Species& addSpecies(const std::string &name, size_t quantity);
 
         /** Creates a new reaction and adds it to the simulation. */
         void addReaction(Reaction &&reaction, double rate);
